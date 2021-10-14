@@ -1,6 +1,5 @@
 version 1.0
 
-import "https://raw.githubusercontent.com/mondrian-scwgs/mondrian/snvgeno/mondrian/wdl/types/align_refdata.wdl" as refdata_struct
 
 
 
