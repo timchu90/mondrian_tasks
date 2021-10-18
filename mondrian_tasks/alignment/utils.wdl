@@ -47,6 +47,7 @@ task bamMerge{
         walltime: "96:00"
         docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
         singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        disks: "local-disk " + length(input_bams) + " HDD"
     }
 }
 
