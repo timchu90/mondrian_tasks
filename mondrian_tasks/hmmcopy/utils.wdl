@@ -70,8 +70,8 @@ task RunHmmcopy{
         File reads_yaml = 'reads.csv.gz.yaml'
         File params = 'params.csv.gz'
         File params_yaml = 'params.csv.gz.yaml'
-        File segs = 'segments.csv.gz'
-        File segs_yaml = 'segments.csv.gz.yaml'
+        File segments = 'segments.csv.gz'
+        File segments_yaml = 'segments.csv.gz.yaml'
         File metrics = 'metrics.csv.gz'
         File metrics_yaml = 'metrics.csv.gz.yaml'
         File tarball = 'hmmcopy_data.tar.gz'
@@ -88,8 +88,8 @@ task RunHmmcopy{
 
 task PlotHmmcopy{
     input{
-        File segs
-        File segs_yaml
+        File segments
+        File segments_yaml
         File reads
         File reads_yaml
         File params
@@ -102,11 +102,11 @@ task PlotHmmcopy{
 
     }
     command<<<
-        hmmcopy_utils plot_hmmcopy --reads ~{reads} --segs ~{segs} --params ~{params} --metrics ~{metrics} \
-        --reference ~{reference} --segs_output segs.pdf --bias_output bias.pdf
+        hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
+        --reference ~{reference} --segments_output segments.pdf --bias_output bias.pdf
      >>>
     output{
-        File segs_pdf = 'segs.pdf'
+        File segments_pdf = 'segments.pdf'
         File bias_pdf = 'bias.pdf'
     }
     runtime{
