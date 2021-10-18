@@ -58,13 +58,23 @@ task RunHmmcopy{
     command<<<
     hmmcopy_utils run_hmmcopy \
         --corrected_reads ~{corrected_wig} \
-        --tempdir output
+        --tempdir output \
+        --reads reads.csv.gz \
+        --metrics metrics.csv.gz \
+        --params params.csv.gz \
+        --segments segments.csv.gz \
+        --output_tarball hmmcopy_data.tar.gz
     >>>
     output{
-        File reads = 'output/0/reads.csv'
-        File params = 'output/0/params.csv'
-        File segs = 'output/0/segs.csv'
-        File metrics = 'output/0/metrics.csv'
+        File reads = 'reads.csv.gz'
+        File reads_yaml = 'reads.csv.gz.yaml'
+        File params = 'params.csv.gz'
+        File params_yaml = 'params.csv.gz.yaml'
+        File segs = 'segments.csv.gz'
+        File segs_yaml = 'segments.csv.gz.yaml'
+        File metrics = 'metrics.csv.gz'
+        File metrics_yaml = 'metrics.csv.gz.yaml'
+        File tarball = 'hmmcopy_data.tar.gz'
     }
     runtime{
         memory: "8 GB"
@@ -174,10 +184,11 @@ task addQuality{
         String? singularity_dir
     }
     command<<<
-    hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output output.csv.gz
+    hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output output.csv.gz --tempdir temp
     >>>
     output{
         File outfile = "output.csv.gz"
+        File outfile_yaml = "output.csv.gz.yaml"
     }
     runtime{
         memory: "8 GB"
