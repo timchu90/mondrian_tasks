@@ -18,8 +18,8 @@ task RunReadCounter{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 }
 
@@ -44,8 +44,8 @@ task CorrectReadCount{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 }
 
@@ -80,8 +80,8 @@ task RunHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 }
 
@@ -113,8 +113,8 @@ task PlotHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 }
 
@@ -136,8 +136,8 @@ task addMappability{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 
 }
@@ -168,8 +168,8 @@ task cellCycleClassifier{
         memory: "18 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 
 }
@@ -194,8 +194,8 @@ task addQuality{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.4'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
     }
 }
 

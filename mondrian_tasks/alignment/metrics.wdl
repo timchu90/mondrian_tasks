@@ -26,7 +26,7 @@ task CollectMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
-        singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
     }
 }

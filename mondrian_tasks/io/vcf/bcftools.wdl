@@ -23,8 +23,8 @@ task concatVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.4'
-        singularity: '~{singularity_dir}/variant_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.5'
+        singularity: '~{singularity_dir}/variant_v0.0.5.sif'
     }
 }
 
@@ -58,8 +58,8 @@ task mergeVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.4'
-        singularity: '~{singularity_dir}/variant_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.5'
+        singularity: '~{singularity_dir}/variant_v0.0.5.sif'
     }
 }
 
@@ -83,8 +83,8 @@ task filterVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.4'
-        singularity: '~{singularity_dir}/variant_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.5'
+        singularity: '~{singularity_dir}/variant_v0.0.5.sif'
     }
 }
 
@@ -110,7 +110,7 @@ task finalizeVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.4'
-        singularity: '~{singularity_dir}/variant_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.5'
+        singularity: '~{singularity_dir}/variant_v0.0.5.sif'
     }
 }

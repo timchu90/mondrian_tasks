@@ -17,8 +17,8 @@ task TagBamWithCellid{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
-        singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
     }
 
 }
@@ -45,8 +45,8 @@ task bamMerge{
         memory: "12 GB"
         cpu: ncores
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
-        singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
         disks: "local-disk " + length(input_bams) + " HDD"
     }
 }
@@ -69,8 +69,8 @@ task AddContaminationStatus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
-        singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
     }
 }
 
@@ -92,7 +92,7 @@ task ClassifyFastqscreen{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.4'
-        singularity: '~{singularity_dir}/alignment_v0.0.4.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
     }
 }
