@@ -43,7 +43,7 @@ task CollectGcMetrics{
         alignment_utils collect_gc_metrics \
         --infile ~{infile} \
         --cell_id ~{cell_id} \
-        --output output.csv.gz
+        --outfile output.csv.gz
     >>>
     output{
         File output_csv = "output.csv.gz"
