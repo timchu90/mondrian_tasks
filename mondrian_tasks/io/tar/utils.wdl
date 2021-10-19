@@ -2,7 +2,7 @@ version 1.0
 
 task tarFiles{
     input{
-        File inputs
+        Array[File] inputs
         String? singularity_dir
         String filename_prefix = "output"
     }
