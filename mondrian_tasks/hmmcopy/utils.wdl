@@ -124,13 +124,14 @@ task addMappability{
         File infile
         File infile_yaml
         String? singularity_dir
+        String filename_prefix
     }
     command<<<
-    hmmcopy_utils add_mappability --infile ~{infile} --outfile output.csv.gz
+    hmmcopy_utils add_mappability --infile ~{infile} --outfile ~{filename_prefix}.csv.gz
     >>>
     output{
-        File outfile = 'output.csv.gz'
-        File outfile_yaml = 'output.csv.gz.yaml'
+        File outfile = '~{filename_prefix}.csv.gz'
+        File outfile_yaml = '~{filename_prefix}.csv.gz.yaml'
     }
     runtime{
         memory: "8 GB"
@@ -182,13 +183,14 @@ task addQuality{
         File alignment_metrics_yaml
         File classifier_training_data
         String? singularity_dir
+        String filename_prefix
     }
     command<<<
-    hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output output.csv.gz --tempdir temp
+    hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output ~{filename_prefix}.csv.gz --tempdir temp
     >>>
     output{
-        File outfile = "output.csv.gz"
-        File outfile_yaml = "output.csv.gz.yaml"
+        File outfile = "~{filename_prefix}.csv.gz"
+        File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
         memory: "8 GB"
