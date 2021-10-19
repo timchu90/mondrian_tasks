@@ -30,3 +30,30 @@ task CollectMetrics{
         singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
     }
 }
+
+
+
+task CollectGcMetrics{
+    input{
+        File infile
+        String cell_id
+        String? singularity_dir
+    }
+    command<<<
+        alignment_utils collect_gc_metrics \
+        --infile ~{infile} \
+        --cell_id ~{cell_id} \
+        --output output.csv.gz
+    >>>
+    output{
+        File output_csv = "output.csv.gz"
+        File output_csv_yaml = "output.csv.gz.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+    }
+}
