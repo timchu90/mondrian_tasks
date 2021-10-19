@@ -48,13 +48,15 @@ task Flagstat{
     input{
         File input_bam
         String? singularity_dir
+        String filename_prefix = "output"
+
     }
 
     command{
-        samtools flagstat ~{input_bam} > flagstat.txt
+        samtools flagstat ~{input_bam} > ~{filename_prefix}_flagstat.txt
     }
     output{
-        File flagstat_txt = 'flagstat.txt'
+        File flagstat_txt = '~{filename_prefix}_flagstat.txt'
     }
     runtime{
         memory: "12 GB"
