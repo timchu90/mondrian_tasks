@@ -32,14 +32,15 @@ task bamMerge{
         File metrics_yaml
         String? singularity_dir
         Int ncores
+        String filename_prefix
     }
     command <<<
-        alignment_utils merge_cells --metrics ~{metrics} --outfile merged.bam --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} --tempdir temp --ncores ~{ncores}
-        samtools index merged.bam
+        alignment_utils merge_cells --metrics ~{metrics} --outfile ~{filename_prefix}.bam --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} --tempdir temp --ncores ~{ncores}
+        samtools index ~{filename_prefix}.bam
     >>>
     output{
-        File outfile = "merged.bam"
-        File outfile_bai = "merged.bam.bai"
+        File outfile = "~{filename_prefix}.bam"
+        File outfile_bai = "~{filename_prefix}.bam.bai"
     }
     runtime{
         memory: "12 GB"
@@ -80,13 +81,14 @@ task ClassifyFastqscreen{
         File metrics
         File metrics_yaml
         String? singularity_dir
+        String filename_prefix
     }
     command<<<
-        alignment_utils classify_fastqscreen --training_data ~{training_data} --metrics ~{metrics} --output output.csv.gz
+        alignment_utils classify_fastqscreen --training_data ~{training_data} --metrics ~{metrics} --output ~{filename_prefix}.csv.gz
     >>>
     output{
-        File output_csv = "output.csv.gz"
-        File output_yaml = "output.csv.gz.yaml"
+        File output_csv = "~{filename_prefix}.csv.gz"
+        File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
         memory: "12 GB"
