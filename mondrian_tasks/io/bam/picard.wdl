@@ -5,12 +5,13 @@ task MarkDuplicates{
     input{
         File input_bam
         String? singularity_dir
+        String filename_prefix = "output"
     }
     command{
         picard -Xmx12G -Xms12G MarkDuplicates \
         INPUT=~{input_bam} \
         OUTPUT=markdups.bam \
-        METRICS_FILE=metrics.txt \
+        METRICS_FILE=~{filename_prefix}_markduplicates_metrics.txt \
         REMOVE_DUPLICATES=False \
         ASSUME_SORTED=True \
         VALIDATION_STRINGENCY=LENIENT \
@@ -20,7 +21,7 @@ task MarkDuplicates{
 
     output{
         File output_bam = 'markdups.bam'
-        File metrics_txt = 'metrics.txt'
+        File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
         memory: "12 GB"
@@ -38,20 +39,22 @@ task CollectGcBiasMetrics{
         File reference
         File reference_fai
         String? singularity_dir
+        String filename_prefix = "output"
     }
     command<<<
         picard -Xmx12G -Xms12G CollectGcBiasMetrics \
         INPUT=~{input_bam} \
-        OUTPUT=metrics.txt \
+        OUTPUT=~{filename_prefix}_gcbias_metrics.txt \
         S=summary.txt \
-        CHART_OUTPUT= chart.pdf \
+        CHART_OUTPUT=~{filename_prefix}_gcbias_chart.pdf \
         REFERENCE_SEQUENCE=~{reference} \
         VALIDATION_STRINGENCY=LENIENT \
         TMP_DIR=tempdir \
         MAX_RECORDS_IN_RAM=150000
     >>>
     output{
-        File metrics_txt="metrics.txt"
+        File metrics_txt="~{filename_prefix}_gcbias_metrics.txt"
+        File chart_pdf="~{filename_prefix}_gcbias_chart.pdf"
     }
     runtime{
         memory: "12 GB"
@@ -69,11 +72,12 @@ task CollectWgsMetrics{
         File reference
         File reference_fai
         String? singularity_dir
+        String filename_prefix = "output"
     }
     command<<<
         picard -Xmx12G -Xms12G CollectWgsMetrics \
         INPUT=~{input_bam} \
-        OUTPUT=metrics.txt \
+        OUTPUT=~{filename_prefix}_wgsmetrics.txt \
         REFERENCE_SEQUENCE=~{reference} \
         MINIMUM_BASE_QUALITY=0 \
         MINIMUM_MAPPING_QUALITY=0 \
@@ -83,7 +87,7 @@ task CollectWgsMetrics{
         MAX_RECORDS_IN_RAM=150000
     >>>
     output{
-        File metrics_txt="metrics.txt"
+        File metrics_txt="~{filename_prefix}_wgsmetrics.txt"
     }
     runtime{
         memory: "12 GB"
@@ -100,30 +104,31 @@ task CollectInsertSizeMetrics{
     input{
         File input_bam
         String? singularity_dir
+        String filename_prefix = "output"
     }
     command<<<
         picard -Xmx12G -Xms12G CollectInsertSizeMetrics \
         INPUT=~{input_bam} \
-        OUTPUT=metrics.txt \
-        HISTOGRAM_FILE=histogram.pdf \
+        OUTPUT=~{filename_prefix}_insert_metrics.txt \
+        HISTOGRAM_FILE=~{filename_prefix}_insert_histogram.pdf \
         ASSUME_SORTED=True,
         VALIDATION_STRINGENCY=LENIENT \
         MAX_RECORDS_IN_RAM=150000
         TMP_DIR=tempdir
 
         if [ ! -f metrics.txt ]; then
-            echo "## FAILED: No properly paired reads" >> metrics.txt
+            echo "## FAILED: No properly paired reads" >> ~{filename_prefix}_insert_metrics.txt
         fi
 
         if [ ! -f histogram.pdf ]; then
-            touch histogram.pdf
+            touch ~{filename_prefix}_insert_histogram.pdf
         fi
 
 
     >>>
     output{
-        File metrics_txt='metrics.txt'
-        File histogram_pdf='histogram.pdf'
+        File metrics_txt='~{filename_prefix}_insert_metrics.txt'
+        File histogram_pdf='~{filename_prefix}_insert_histogram.pdf'
     }
     runtime{
         memory: "12 GB"
@@ -151,7 +156,6 @@ task SortSam{
     >>>
     output{
         File output_bam="markdups.bam"
-        File metrics_txt="metrics.txt"
     }
     runtime{
         memory: "12 GB"
