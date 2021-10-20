@@ -19,21 +19,22 @@ task runDestruct{
         File repeats_satellite_regions
         String num_threads
         String? singularity_dir
+        String filename_prefix
     }
     command<<<
         echo "genome_fasta = '~{reference}'; genome_fai = '~{reference_fai}'; gtf_filename = '~{reference_gtf}'" > config.py
 
         destruct run $(dirname ~{reference}) \
-        breakpoint_table.csv breakpoint_library_table.csv \
-        breakpoint_read_table.csv \
+        ~{filename_prefix}_breakpoint_table.csv ~{filename_prefix}_breakpoint_library_table.csv \
+        ~{filename_prefix}_breakpoint_read_table.csv \
         --bam_files ~{tumour_bam} ~{normal_bam} \
         --lib_ids tumour normal \
         --tmpdir tempdir --pipelinedir pipelinedir --submit local --config config.py --loglevel DEBUG --maxjobs ~{num_threads}
     >>>
     output{
-        File breakpoint_table = "breakpoint_table.csv"
-        File library_table = "breakpoint_library_table.csv"
-        File read_table = "breakpoint_read_table.csv"
+        File breakpoint_table = "~{filename_prefix}_breakpoint_table.csv"
+        File library_table = "~{filename_prefix}_breakpoint_library_table.csv"
+        File read_table = "~{filename_prefix}_breakpoint_read_table.csv"
     }
     runtime{
         memory: "8 GB"

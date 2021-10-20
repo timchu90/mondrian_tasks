@@ -16,12 +16,13 @@ task runSvaba{
         File reference_fa_pac
         File reference_fa_sa
         String? singularity_dir
+        String filename_prefix
     }
     command{
-        svaba run -t ~{tumour_bam} -n ~{normal_bam} -G ~{reference} -z -p ~{num_threads} -a output
+        svaba run -t ~{tumour_bam} -n ~{normal_bam} -G ~{reference} -z -p ~{num_threads} -a ~{filename_prefix}
     }
     output{
-        File output_vcf = "output.svaba.somatic.sv.vcf.gz"
+        File output_vcf = "~{filename_prefix}.svaba.somatic.sv.vcf.gz"
     }
     runtime{
         memory: "8 GB"

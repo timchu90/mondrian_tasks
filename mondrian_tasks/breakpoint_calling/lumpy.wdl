@@ -32,12 +32,13 @@ task lumpyExpress{
         File normal_bam
         File tumour_bam
         String? singularity_dir
+        String filename_prefix
     }
     command{
-        lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o lumpy.vcf
+        lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o ~{filename_prefix}_lumpy.vcf
     }
     output{
-        File lumpy_vcf = 'lumpy.vcf'
+        File lumpy_vcf = '~{filename_prefix}_lumpy.vcf'
     }
     runtime{
         memory: "40 GB"

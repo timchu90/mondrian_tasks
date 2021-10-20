@@ -14,12 +14,13 @@ task runGridss{
         File reference_fa_pac
         File reference_fa_sa
         String? singularity_dir
+        String filename_prefix
     }
     command{
         gridss.sh \
         --assembly assembly/assembly.bam \
         --reference ~{reference} \
-        --output calls.vcf.gz \
+        --output ~{filename_prefix}_gridss.vcf.gz \
         --threads ~{num_threads} \
         --workingdir workingdir \
         --jvmheap 30g \
@@ -27,7 +28,7 @@ task runGridss{
         --labels tumour,normal ~{tumour_bam} ~{normal_bam}
     }
     output{
-        File output_vcf = "calls.vcf.gz"
+        File output_vcf = "~{filename_prefix}_gridss.vcf.gz"
     }
     runtime{
         memory: "8 GB"
