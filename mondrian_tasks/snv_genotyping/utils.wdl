@@ -9,6 +9,7 @@ task genotyper{
         Array[String] intervals
         Int num_threads
         String? singularity_dir
+        String filename_prefix = "snv_genotyping"
     }
     command<<<
         for interval in ~{sep=" "intervals}
@@ -19,11 +20,11 @@ task genotyper{
         parallel --jobs ~{num_threads} < commands.txt
 
         inputs=`echo *genotype.csv.gz | sed "s/ / --in_f /g"`
-        csverve concat --in_f $inputs  --out_f merged.csv.gz --write_header
+        csverve concat --in_f $inputs  --out_f ~{filename_prefix}.csv.gz --write_header
     >>>
     output{
-        File output_csv = "merged.csv.gz"
-        File output_yaml = "merged.csv.gz.yaml"
+        File output_csv = "~{filename_prefix}.csv.gz"
+        File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
         memory: "12 GB"
