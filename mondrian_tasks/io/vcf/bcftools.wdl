@@ -45,7 +45,7 @@ task mergeVcf{
         else
             bcftools merge -O z -o merged.vcf.gz ~{sep=" " vcf_files} --force-samples
         fi
-        vcf-sort merged.vcf.gz > ~{filename_prefix}.vcf
+        vcf-sort merged.vcf.gz > merged_sorted.vcf
         bgzip merged_sorted.vcf -c > ~{filename_prefix}.vcf.gz
         tabix -f -p vcf ~{filename_prefix}.vcf.gz
         bcftools index ~{filename_prefix}.vcf.gz
