@@ -98,14 +98,14 @@ task finalizeVcf{
     }
     command<<<
         vcf-sort ~{vcf_file} > vcf_uncompressed.vcf
-        bgzip vcf_uncompressed.vcf -c > ~{filename_prefix}_compressed.vcf.gz
-        tabix -f -p vcf ~{filename_prefix}_compressed.vcf.gz
-        bcftools index ~{filename_prefix}_compressed.vcf.gz
+        bgzip vcf_uncompressed.vcf -c > ~{filename_prefix}.vcf.gz
+        tabix -f -p vcf ~{filename_prefix}.vcf.gz
+        bcftools index ~{filename_prefix}.vcf.gz
     >>>
     output{
-        File vcf = '~{filename_prefix}_compressed.vcf.gz'
-        File vcf_csi = '~{filename_prefix}_compressed.vcf.gz.csi'
-        File vcf_tbi = '~{filename_prefix}_compressed.vcf.gz.tbi'
+        File vcf = '~{filename_prefix}.vcf.gz'
+        File vcf_csi = '~{filename_prefix}.vcf.gz.csi'
+        File vcf_tbi = '~{filename_prefix}.vcf.gz.tbi'
     }
     runtime{
         memory: "12 GB"
