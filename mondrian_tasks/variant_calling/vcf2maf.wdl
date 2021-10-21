@@ -85,12 +85,13 @@ task MergeMafs{
     input{
         Array[File] input_mafs
         String? singularity_dir
+        String filename_prefix
     }
     command<<<
-        touch merged.maf
+        touch ~{filename_prefix}.maf
     >>>
     output{
-        File output_maf = "merged.maf"
+        File output_maf = "~{filename_prefix}.maf"
     }
     runtime{
         memory: "12 GB"
