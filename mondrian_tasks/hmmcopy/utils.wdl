@@ -129,7 +129,7 @@ task plotHeatmap{
         String? singularity_dir
     }
     command<<<
-        hmmcopy_utils plot_heatmap --reads ~{reads} --metrics ~{metrics} \
+        hmmcopy_utils heatmap --reads ~{reads} --metrics ~{metrics} \
         --output ~{filename_prefix}.pdf
      >>>
     output{
