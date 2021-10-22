@@ -201,3 +201,29 @@ task addQuality{
     }
 }
 
+task createSegmentsTar{
+    input{
+        File hmmcopy_metrics
+        File hmmcopy_metrics_yaml
+        Array[File] segments_plot
+        String? singularity_dir
+        String filename_prefix
+    }
+    command<<<
+    hmmcopy_utils create_segs_tar --segs_png ~{sep = " " segments_plot} \
+    --metrics ~{hmmcopy_metrics} --pass_output ~{filename_prefix}_pass.tar.gz \
+    --fail_output ~{filename_prefix}_fail.tar.gz --tempdir temp
+    >>>
+    output{
+        File segments_pass = "~{filename_prefix}_pass.tar.gz"
+        File segments_fail = "~{filename_prefix}_fail.tar.gz"
+    }
+    runtime{
+        memory: "8 GB"
+        cpu: 1
+        walltime: "6:00"
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
+    }
+}
+
