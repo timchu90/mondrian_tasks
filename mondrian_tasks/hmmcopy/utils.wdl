@@ -206,6 +206,7 @@ task createSegmentsTar{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
+        Array[File] segments_plot_sample
         String? singularity_dir
         String filename_prefix
     }
