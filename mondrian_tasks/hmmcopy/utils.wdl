@@ -119,6 +119,32 @@ task PlotHmmcopy{
 }
 
 
+task plotHeatmap{
+    input{
+        File reads
+        File reads_yaml
+        File metrics
+        File metrics_yaml
+        String filename_prefix = "heatmap"
+        String? singularity_dir
+    }
+    command<<<
+        hmmcopy_utils plot_heatmap --reads ~{reads} --metrics ~{metrics} \
+        --output ~{filename_prefix}.pdf
+     >>>
+    output{
+        File heatmap_pdf = '~{filename_prefix}.pdf'
+    }
+    runtime{
+        memory: "8 GB"
+        cpu: 1
+        walltime: "6:00"
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.5'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.5.sif'
+    }
+}
+
+
 task addMappability{
     input{
         File infile
