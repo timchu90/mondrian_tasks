@@ -99,7 +99,6 @@ task PlotHmmcopy{
         File reference
         File reference_fai
         String? singularity_dir
-
     }
     command<<<
         hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
@@ -107,6 +106,7 @@ task PlotHmmcopy{
      >>>
     output{
         File segments_pdf = 'segments.pdf'
+        File segments_sample = 'segments.pdf.sample'
         File bias_pdf = 'bias.pdf'
     }
     runtime{
