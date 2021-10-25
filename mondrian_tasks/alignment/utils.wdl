@@ -35,12 +35,21 @@ task bamMerge{
         String filename_prefix
     }
     command <<<
-        alignment_utils merge_cells --metrics ~{metrics} --outfile ~{filename_prefix}.bam --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} --tempdir temp --ncores ~{ncores}
+        alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
+        --tempdir temp --ncores ~{ncores} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
+        --control_outfile ~{filename_prefix}_control.bam \
+        --pass_outfile ~{filename_prefix}.bam
         samtools index ~{filename_prefix}.bam
+        samtools index ~{filename_prefix}_control.bam
+        samtools index ~{filename_prefix}_contaminated.bam
     >>>
     output{
-        File outfile = "~{filename_prefix}.bam"
-        File outfile_bai = "~{filename_prefix}.bam.bai"
+        File pass_outfile = "~{filename_prefix}.bam"
+        File pass_outfile_bai = "~{filename_prefix}.bam.bai"
+        File contaminated_outfile = "~{filename_prefix}.bam"
+        File contaminated_outfile_bai = "~{filename_prefix}.bam.bai"
+        File control_outfile = "~{filename_prefix}.bam"
+        File control_outfile_bai = "~{filename_prefix}.bam.bai"
     }
     runtime{
         memory: "12 GB"
