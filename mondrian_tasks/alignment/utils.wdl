@@ -39,9 +39,6 @@ task bamMerge{
         --tempdir temp --ncores ~{ncores} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
         --control_outfile ~{filename_prefix}_control.bam \
         --pass_outfile ~{filename_prefix}.bam
-        samtools index ~{filename_prefix}.bam
-        samtools index ~{filename_prefix}_control.bam
-        samtools index ~{filename_prefix}_contaminated.bam
     >>>
     output{
         File pass_outfile = "~{filename_prefix}.bam"
