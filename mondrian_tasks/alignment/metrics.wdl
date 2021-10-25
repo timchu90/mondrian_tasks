@@ -8,6 +8,20 @@ task CollectMetrics{
         File markdups_metrics
         String cell_id
         String? singularity_dir
+        Int column
+        String condition
+        Int img_col
+        String index_i5
+        String index_i7
+        String index_sequence
+        String library_id
+        String pick_met
+        String primer_i5
+        String primer_i7
+        Int row
+        String sample_id
+        String sample_type
+        Boolean is_control
     }
     command<<<
         alignment_utils collect_metrics \
@@ -16,7 +30,21 @@ task CollectMetrics{
         --flagstat ~{flagstat} \
         --markdups_metrics ~{markdups_metrics} \
         --cell_id ~{cell_id} \
-        --output output.csv.gz
+        --output output.csv.gz \
+        --column ~{column} \
+        --condition ~{condition} \
+        --img_col ~{img_col} \
+        --index_i5 ~{index_i5} \
+        --index_i7 ~{index_i7} \
+        --index_sequence ~{index_sequence} \
+        --library_id ~{library_id} \
+        --pick_met ~{pick_met} \
+        --primer_i5 ~{primer_i5} \
+        --primer_i7 ~{primer_i7} \
+        --row ~{row} \
+        --sample_id ~{sample_id} \
+        --sample_type ~{sample_type} \
+        --is_control ~{is_control}
     >>>
     output{
         File output_csv = "output.csv.gz"
