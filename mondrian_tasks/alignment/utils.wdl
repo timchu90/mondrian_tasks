@@ -43,10 +43,10 @@ task bamMerge{
     output{
         File pass_outfile = "~{filename_prefix}.bam"
         File pass_outfile_bai = "~{filename_prefix}.bam.bai"
-        File contaminated_outfile = "~{filename_prefix}.bam"
-        File contaminated_outfile_bai = "~{filename_prefix}.bam.bai"
-        File control_outfile = "~{filename_prefix}.bam"
-        File control_outfile_bai = "~{filename_prefix}.bam.bai"
+        File contaminated_outfile = "~{filename_prefix}_contaminated.bam"
+        File contaminated_outfile_bai = "~{filename_prefix}_contaminated.bam.bai"
+        File control_outfile = "~{filename_prefix}_control.bam"
+        File control_outfile_bai = "~{filename_prefix}_control.bam.bai"
     }
     runtime{
         memory: "12 GB"
