@@ -93,6 +93,7 @@ task AnnotateCoverageMetrics{
         File bamfile
         File bamfile_bai
         String filename_prefix="output"
+        String? singularity_dir
     }
     command<<<
     alignment_utils coverage_metrics --metrics ~{metrics} --bamfile ~{bamfile} --output ~{filename_prefix}.csv.gz
