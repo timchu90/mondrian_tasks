@@ -101,4 +101,12 @@ task AnnotateCoverageMetrics{
         File output_csv = "~{filename_prefix}.csv.gz"
         File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
+        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+    }
+
 }
