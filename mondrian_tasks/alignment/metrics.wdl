@@ -60,7 +60,6 @@ task CollectMetrics{
 }
 
 
-
 task CollectGcMetrics{
     input{
         File infile
@@ -83,5 +82,23 @@ task CollectGcMetrics{
         walltime: "48:00"
         docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
         singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+    }
+}
+
+
+task AnnotateCoverageMetrics{
+    input{
+        File metrics
+        File metrics_yaml
+        File bamfile
+        File bamfile_bai
+        String filename_prefix="output"
+    }
+    command<<<
+    alignment_utils coverage_metrics --metrics ~{metrics} --bamfile ~{bamfile} --output ~{filename_prefix}.csv.gz
+    >>>
+    output{
+        File output_csv = "~{filename_prefix}.csv.gz"
+        File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
 }

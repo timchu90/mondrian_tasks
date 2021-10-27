@@ -15,12 +15,14 @@ task MarkDuplicates{
         REMOVE_DUPLICATES=False \
         ASSUME_SORTED=True \
         VALIDATION_STRINGENCY=LENIENT \
-        TMP_DIR=tempdir
+        TMP_DIR=tempdir \
         MAX_RECORDS_IN_RAM=150000
+        samtools index markdups.bam
     }
 
     output{
         File output_bam = 'markdups.bam'
+        File output_bai = 'markdups.bam.bai'
         File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
