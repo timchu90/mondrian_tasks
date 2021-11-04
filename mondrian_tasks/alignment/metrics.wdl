@@ -44,7 +44,7 @@ task CollectMetrics{
         --row ~{row} \
         --sample_id ~{sample_id} \
         --sample_type ~{sample_type} \
-        --is_control ~{is_control}
+        ~{true="--is_control", false=' ' is_control}
     >>>
     output{
         File output_csv = "output.csv.gz"
