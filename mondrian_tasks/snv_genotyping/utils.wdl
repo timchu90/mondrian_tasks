@@ -30,7 +30,7 @@ task genotyper{
         memory: "12 GB"
         cpu: 1
         walltime: "24:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.5'
-        singularity: '~{singularity_dir}/variant_v0.0.5.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.6'
+        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
     }
 }

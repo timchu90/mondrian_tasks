@@ -44,7 +44,7 @@ task CollectMetrics{
         --row ~{row} \
         --sample_id ~{sample_id} \
         --sample_type ~{sample_type} \
-        ~{true="--is_control", false=' ' is_control}
+        ~{true="--is_control" false=' ' is_control}
     >>>
     output{
         File output_csv = "output.csv.gz"
@@ -54,8 +54,8 @@ task CollectMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
-        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
+        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
     }
 }
 
@@ -80,8 +80,8 @@ task CollectGcMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
-        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
+        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
     }
 }
 
@@ -106,8 +106,8 @@ task AnnotateCoverageMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.5'
-        singularity: '~{singularity_dir}/alignment_v0.0.5.sif'
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
+        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
     }
 
 }
