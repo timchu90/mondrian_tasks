@@ -254,3 +254,33 @@ task createSegmentsTar{
     }
 }
 
+
+
+task generateHtmlReport{
+    input{
+        File metrics
+        File metrics_yaml
+        File gc_metrics
+        File gc_metrics_yaml
+        File reference_gc
+        String filename_prefix
+        String? singularity_dir
+    }
+    command<<<
+    hmmcopy_utils generate_html_report \
+     --tempdir temp --html ~{filename_prefix}_report.html \
+     --reference_gc ~{reference_gc} \
+     --metrics ~{metrics} \
+     --gc_metrics ~{gc_metrics}
+    >>>
+    output{
+        File html_report = "~{filename_prefix}_report.html"
+    }
+    runtime{
+        memory: "8 GB"
+        cpu: 1
+        walltime: "6:00"
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.6'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.6.sif'
+    }
+}
