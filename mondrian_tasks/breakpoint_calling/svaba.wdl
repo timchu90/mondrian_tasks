@@ -28,8 +28,8 @@ task runSvaba{
         memory: "8 GB"
         cpu: num_threads
         walltime: "240:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.7'
+        singularity: '~{singularity_dir}/breakpoint_v0.0.7.sif'
     }
 
 }
