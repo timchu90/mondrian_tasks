@@ -284,3 +284,32 @@ task generateHtmlReport{
         singularity: '~{singularity_dir}/hmmcopy_v0.0.6.sif'
     }
 }
+
+
+task addClusteringOrder{
+    input{
+        File metrics
+        File metrics_yaml
+        File reads
+        File reads_yaml
+        String filename_prefix = "added_clustering_order"
+        String? singularity_dir
+    }
+    command<<<
+    hmmcopy_utils add_clustering_order \
+     --reads ~{reads} --output ~{filename_prefix}.csv.gz \
+     --metrics ~{metrics}
+    >>>
+    output{
+        File output_csv = "~{filename_prefix}.csv.gz"
+        File output_yaml = "~{filename_prefix}.csv.gz.yaml"
+    }
+    runtime{
+        memory: "8 GB"
+        cpu: 1
+        walltime: "6:00"
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.6'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.6.sif'
+    }
+}
+
