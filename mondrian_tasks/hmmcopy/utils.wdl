@@ -14,11 +14,11 @@ task RunReadCounter{
     }
     command<<<
         hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
+        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes}
+        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes}
     >>>
     output{
-        Array[File] wigs = glob('output/*.wig')
+        Array[File] wigs = glob('output*/*.wig')
     }
     runtime{
         memory: "12 GB"
