@@ -76,7 +76,7 @@ task CoverageMetrics{
         File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "22 GB"
         cpu: 1
         walltime: "48:00"
         docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
