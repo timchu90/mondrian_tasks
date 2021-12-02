@@ -17,7 +17,7 @@ task TagBamWithCellid{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 
@@ -52,9 +52,10 @@ task bamMerge{
         memory: "12 GB"
         cpu: ncores
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
-        disks: "local-disk " + length(input_bams) + " HDD"
+        disks: if length(input_bams) > 3000 then "local-disk 5999 LOCAL" else if length(input_bams) > 1500 then "local-disk 2999 LOCAL" else if length(input_bams) > 750 then "local-disk 1499 LOCAL" else "local-disk 749 LOCAL" 
+        preemptible: 0
     }
 }
 
@@ -76,7 +77,7 @@ task AddContaminationStatus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 }
@@ -100,7 +101,7 @@ task ClassifyFastqscreen{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 }

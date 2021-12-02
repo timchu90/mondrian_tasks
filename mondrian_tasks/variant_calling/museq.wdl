@@ -31,7 +31,7 @@ task runMuseq{
         memory: "12 GB"
         cpu: 1
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.7'
         singularity: '~{singularity_dir}/variant_v0.0.7.sif'
     }
 }
@@ -57,7 +57,7 @@ task fixMuseqVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.7'
         singularity: '~{singularity_dir}/variant_v0.0.7.sif'
     }
 }

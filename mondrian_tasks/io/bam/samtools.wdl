@@ -17,7 +17,7 @@ task SamToBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }
@@ -39,7 +39,7 @@ task indexBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }
@@ -62,7 +62,7 @@ task Flagstat{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }
@@ -84,7 +84,7 @@ task mergeBams{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }
@@ -107,7 +107,7 @@ task viewBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }
@@ -127,7 +127,7 @@ task sortBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.6'
         singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
     }
 }

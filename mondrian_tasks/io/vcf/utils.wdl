@@ -26,7 +26,7 @@ task vcf_reheader_id{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.6'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
         singularity: '~{singularity_dir}/variant_v0.0.6.sif'
     }
 }

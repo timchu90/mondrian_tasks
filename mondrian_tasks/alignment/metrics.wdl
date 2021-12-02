@@ -29,7 +29,7 @@ task CollectMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 }
@@ -55,7 +55,7 @@ task CollectGcMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 }
@@ -79,7 +79,7 @@ task CoverageMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 
@@ -106,7 +106,7 @@ task AddMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.7'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
         singularity: '~{singularity_dir}/alignment_v0.0.7.sif'
     }
 }
