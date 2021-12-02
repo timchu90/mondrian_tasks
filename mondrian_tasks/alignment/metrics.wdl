@@ -76,7 +76,7 @@ task CoverageMetrics{
         File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "22 GB"
         cpu: 1
         walltime: "48:00"
         docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.7'
