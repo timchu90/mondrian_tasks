@@ -16,7 +16,7 @@ task GetGenomeSize{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
@@ -46,7 +46,7 @@ task GenerateChromDepth{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
@@ -67,7 +67,7 @@ task merge_chrom_depths{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
@@ -148,7 +148,7 @@ task run_strelka{
         memory: "12 GB"
         cpu: 1
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
