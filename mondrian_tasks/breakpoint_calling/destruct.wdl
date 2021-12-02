@@ -40,7 +40,7 @@ task runDestruct{
         memory: "8 GB"
         cpu: num_threads
         walltime: "240:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.7'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.8'
+        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
     }
 }

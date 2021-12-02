@@ -26,7 +26,7 @@ task consensus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.7'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.8'
+        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
     }
 }
