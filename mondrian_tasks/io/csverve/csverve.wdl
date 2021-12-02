@@ -18,8 +18,8 @@ task rewrite_csv{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.7'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.8'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
     }
 }
 
@@ -43,8 +43,8 @@ task concatenate_csv {
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.7'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.8'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
     }
 }
 
@@ -68,8 +68,8 @@ task merge_csv{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.7'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.8'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
     }
 }
 
@@ -91,7 +91,7 @@ task finalize_csv {
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.7'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.8'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
     }
 }

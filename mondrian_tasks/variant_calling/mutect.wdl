@@ -16,8 +16,8 @@ task GetSampleId{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.7'
-        singularity: '~{singularity_dir}/variant_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
 
@@ -59,8 +59,8 @@ task runMutect{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.7'
-        singularity: '~{singularity_dir}/variant_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
 
@@ -82,8 +82,8 @@ task filterMutect{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.7'
-        singularity: '~{singularity_dir}/variant_v0.0.7.sif'
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }
 }
 
