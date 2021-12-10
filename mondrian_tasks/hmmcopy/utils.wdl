@@ -319,3 +319,44 @@ task addClusteringOrder{
     }
 }
 
+
+task HmmcopyMetadata{
+    input{
+        File params
+        File params_yaml
+        File segments
+        File segments_yaml
+        File metrics
+        File metrics_yaml
+        File reads
+        File reads_yaml
+        File heatmap
+        File segments_pass
+        File segments_fail
+        File metadata_input
+        String? singularity_dir
+    }
+    command<<<
+        hmmcopy_utils generate_metadata \
+        --params ~{params} ~{params_yaml} \
+        --segments ~{segments} ~{segments_yaml} \
+        --metrics ~{metrics} ~{metrics_yaml} \
+        --reads ~{reads} ~{reads_yaml} \
+        --segments_tar_pass ~{segments_pass} \
+        --segments_tar_fail ~{segments_fail} \
+        --heatmap ~{heatmap} \
+        --metadata_output metadata.yaml \
+        --metadata_input ~{metadata_input}
+    >>>
+    output{
+        File metadata_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.8'
+        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+    }
+}
+

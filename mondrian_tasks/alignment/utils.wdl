@@ -104,3 +104,43 @@ task ClassifyFastqscreen{
         singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
     }
 }
+
+task AlignmentMetadata{
+    input{
+        File bam
+        File bai
+        File contaminated_bam
+        File contaminated_bai
+        File control_bam
+        File control_bai
+        File metrics
+        File metrics_yaml
+        File gc_metrics
+        File gc_metrics_yaml
+        File fastqscreen_detailed
+        File fastqscreen_detailed_yaml
+        File tarfile
+        File metadata_input
+        String? singularity_dir
+    }
+    command<<<
+        alignment_utils generate_metadata \
+        --bam ~{bam} ~{bai} \
+        --control ~{control_bam} ~{control_bai} \
+        --contaminated ~{contaminated_bam} ~{contaminated_bai} \
+        --metrics ~{metrics} ~{metrics_yaml} \
+        --gc_metrics ~{gc_metrics} ~{gc_metrics} \
+        --fastqscreen_detailed ~{fastqscreen_detailed} ~{fastqscreen_detailed_yaml} \
+        --tarfile ~{tarfile} --metadata_output metadata.yaml --metadata_input ~{metadata_input}
+    >>>
+    output{
+        File metadata_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: 'quay.io/mondrianscwgs/alignment:v0.0.8'
+        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+    }
+}

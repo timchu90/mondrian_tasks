@@ -14,7 +14,7 @@ task genotyper{
     command<<<
         for interval in ~{sep=" "intervals}
             do
-                echo "variant_utils snv_genotyper --interval ${interval} --bam ~{bam} \
+                echo "snv_genotyping_utils snv_genotyper --interval ${interval} --bam ~{bam} \
                  --targets_vcf ~{vcf_file}  --output ${interval}.genotype.csv.gz" >> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
@@ -30,6 +30,32 @@ task genotyper{
         memory: "12 GB"
         cpu: 1
         walltime: "24:00"
+        docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
+        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+    }
+}
+
+
+task SnvGenotypingMetadata{
+    input{
+        File output_csv
+        File output_csv_yaml
+        File metadata_input
+        String? singularity_dir
+    }
+    command<<<
+        snv_genotyping_utils generate_metadata \
+        --outputs ~{output_csv} ~{output_csv_yaml} \
+        --metadata_input ~{metadata_input} \
+        --metadata_output metadata.yaml
+    >>>
+    output{
+        File metadata_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
         docker: 'quay.io/mondrianscwgs/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
     }

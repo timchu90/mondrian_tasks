@@ -12,19 +12,17 @@ task BwaMemPaired {
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String library_id
+        File metadata_yaml
+        String cell_id
         String lane_id
-        String sample_id
-        String center
+        String flowcell_id
         String? singularity_dir
     }
     command {
-        bwa mem \
-        -R  $(echo "@RG\tID:~{sample_id}_~{library_id}_~{lane_id}\tSM:~{sample_id}\tLB:~{library_id}\tPL:ILLUMINA\tPU:~{lane_id}\tCN:~{center}") \
-        -C -M  \
-        ~{reference} \
-        ~{fastq1} ~{fastq2} \
-        | samtools view -bSh - > aligned.bam
+        alignment_utils bwa_align --metadata_yaml ~{metadata_yaml} \
+        --fastq1 ~{fastq1} --fastq2 ~{fastq2}  --reference ~{reference} \
+        --output aligned.bam --cell_id ~{cell_id} --lane_id ~{lane_id} \
+        --flowcell_id ~{flowcell_id}
     }
     output {
         File bam = "aligned.bam"
