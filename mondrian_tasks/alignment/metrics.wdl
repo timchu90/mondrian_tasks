@@ -32,7 +32,7 @@ task CollectMetrics{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -60,7 +60,7 @@ task CollectGcMetrics{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -86,7 +86,7 @@ task CoverageMetrics{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 
 }
@@ -115,6 +115,6 @@ task AddMetadata{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }

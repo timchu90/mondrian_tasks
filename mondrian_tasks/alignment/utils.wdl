@@ -20,7 +20,7 @@ task TagBamWithCellid{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 
 }
@@ -57,7 +57,7 @@ task bamMerge{
         cpu: ncores
         walltime: "96:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
         disks: "local-disk " + length(input_bams) + " HDD"
     }
 }
@@ -83,7 +83,7 @@ task AddContaminationStatus{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -109,7 +109,7 @@ task ClassifyFastqscreen{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -151,6 +151,6 @@ task AlignmentMetadata{
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }

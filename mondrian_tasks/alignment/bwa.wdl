@@ -33,6 +33,6 @@ task BwaMemPaired {
         cpu: 1
         walltime: "8:00"
         docker: '~{docker_image}'
-        singularity: '~{singularity_dir}'
+        singularity: '~{singularity_image}'
     }
 }
