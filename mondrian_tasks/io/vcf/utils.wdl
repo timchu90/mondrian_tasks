@@ -8,7 +8,9 @@ task vcf_reheader_id{
         File tumour_bam
         String vcf_tumour_id
         String vcf_normal_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils vcf_reheader_id \
@@ -26,7 +28,7 @@ task vcf_reheader_id{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

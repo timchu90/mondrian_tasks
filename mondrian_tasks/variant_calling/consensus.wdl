@@ -12,7 +12,8 @@ task runConsensusCalling{
         File mutect_vcf
         File mutect_vcf_tbi
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command<<<
             variant_utils consensus --museq_vcf ~{museq_vcf} \
@@ -28,8 +29,8 @@ task runConsensusCalling{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

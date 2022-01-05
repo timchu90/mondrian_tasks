@@ -5,7 +5,9 @@ task TagBamWithCellid{
     input {
         File infile
         String cell_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command <<<
         alignment_utils tag_bam_with_cellid --infile ~{infile} --outfile outfile.bam --cell_id ~{cell_id}
@@ -17,8 +19,8 @@ task TagBamWithCellid{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
     }
 
 }
@@ -30,7 +32,9 @@ task bamMerge{
         Array[String] cell_ids
         File metrics
         File metrics_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         Int ncores
         String filename_prefix
     }
@@ -52,8 +56,8 @@ task bamMerge{
         memory: "12 GB"
         cpu: ncores
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
         disks: "local-disk " + length(input_bams) + " HDD"
     }
 }
@@ -63,7 +67,9 @@ task AddContaminationStatus{
     input{
         File input_csv
         File input_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         alignment_utils add_contamination_status --infile ~{input_csv} --outfile output.csv.gz
@@ -76,8 +82,8 @@ task AddContaminationStatus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
     }
 }
 
@@ -86,7 +92,9 @@ task ClassifyFastqscreen{
         File training_data
         File metrics
         File metrics_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -100,8 +108,8 @@ task ClassifyFastqscreen{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
     }
 }
 
@@ -121,7 +129,9 @@ task AlignmentMetadata{
         File fastqscreen_detailed_yaml
         File tarfile
         File metadata_input
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         alignment_utils generate_metadata \
@@ -140,7 +150,7 @@ task AlignmentMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
     }
 }

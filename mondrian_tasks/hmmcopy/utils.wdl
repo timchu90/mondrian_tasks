@@ -10,7 +10,9 @@ task RunReadCounter{
         File contaminated_bamfile
         File contaminated_baifile
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
@@ -24,8 +26,8 @@ task RunReadCounter{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -36,7 +38,9 @@ task CorrectReadCount{
         File gc_wig
         File map_wig
         String map_cutoff
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
@@ -50,8 +54,8 @@ task CorrectReadCount{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -59,7 +63,9 @@ task CorrectReadCount{
 task RunHmmcopy{
     input{
         File corrected_wig
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils run_hmmcopy \
@@ -86,8 +92,8 @@ task RunHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -104,7 +110,9 @@ task PlotHmmcopy{
         File metrics_yaml
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
@@ -119,8 +127,8 @@ task PlotHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -132,7 +140,9 @@ task plotHeatmap{
         File metrics
         File metrics_yaml
         String filename_prefix = "heatmap"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils heatmap --reads ~{reads} --metrics ~{metrics} \
@@ -145,8 +155,8 @@ task plotHeatmap{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -155,7 +165,9 @@ task addMappability{
     input{
         File infile
         File infile_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -169,8 +181,8 @@ task addMappability{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }
@@ -181,7 +193,9 @@ task cellCycleClassifier{
         File hmmcopy_reads
         File hmmcopy_metrics
         File alignment_metrics
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     cell_cycle_classifier train-classify ~{hmmcopy_reads} ~{hmmcopy_metrics} ~{alignment_metrics} output.csv.gz
@@ -201,8 +215,8 @@ task cellCycleClassifier{
         memory: "18 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }
@@ -214,7 +228,9 @@ task addQuality{
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -228,8 +244,8 @@ task addQuality{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -239,7 +255,9 @@ task createSegmentsTar{
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -255,8 +273,8 @@ task createSegmentsTar{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -270,7 +288,9 @@ task generateHtmlReport{
         File gc_metrics_yaml
         File reference_gc
         String filename_prefix
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils generate_html_report \
@@ -286,8 +306,8 @@ task generateHtmlReport{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -299,7 +319,9 @@ task addClusteringOrder{
         File reads
         File reads_yaml
         String filename_prefix = "added_clustering_order"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils add_clustering_order \
@@ -314,8 +336,8 @@ task addClusteringOrder{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -334,7 +356,9 @@ task HmmcopyMetadata{
         File segments_pass
         File segments_fail
         File metadata_input
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils generate_metadata \
@@ -355,8 +379,8 @@ task HmmcopyMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/hmmcopy:v0.0.9'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

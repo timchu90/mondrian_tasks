@@ -4,7 +4,9 @@ task SamToBam{
     input{
         File inputBam
         String outputSam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command{
         samtools view -bSh ${inputBam} > ${outputSam}
@@ -17,8 +19,8 @@ task SamToBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -26,7 +28,9 @@ task indexBam{
     input{
         File inputBam
         String outputBai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command{
     samtools index ${inputBam} ${outputBai}
@@ -39,15 +43,17 @@ task indexBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 task Flagstat{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
 
     }
@@ -62,8 +68,8 @@ task Flagstat{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -72,7 +78,9 @@ task mergeBams{
     input{
         Array[File]+ inputBams
         String outputFile
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command{
         samtools merge ${outputFile} ${sep=' ' inputBams}
@@ -84,8 +92,8 @@ task mergeBams{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -95,7 +103,9 @@ task viewBam{
         String outputBam
         Int? bam_flag
         String samtools_flags
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command{
         samtools view ~{samtools_flags}  ~{"-F " + bam_flag} ${inputBam} > ${outputBam}
@@ -107,15 +117,17 @@ task viewBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 task sortBam{
     input {
         File inputBam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command {
         samtools sort ${inputBam} -o sorted.bam
@@ -127,7 +139,7 @@ task sortBam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.6'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

@@ -8,8 +8,7 @@ task consensus{
         File gridss
         String filename_prefix
         String sample_id
-        String? singularity_dir
-    }
+String? singularity_image         String? docker_image    }
     command<<<
         mkdir tempdir
         breakpoint_utils consensus \
@@ -26,7 +25,7 @@ task consensus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.9'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

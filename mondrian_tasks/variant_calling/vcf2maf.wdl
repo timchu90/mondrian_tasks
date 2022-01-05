@@ -4,7 +4,9 @@ task RunVcf2Maf{
     input{
         File input_vcf
         File vep_ref
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         mkdir vep_ref_dir
@@ -30,8 +32,8 @@ task RunVcf2Maf{
         memory: "12 GB"
         cpu: 1
         walltime: "24:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -41,7 +43,9 @@ task UpdateMafId{
         File input_maf
         String normal_id
         String tumour_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils update_maf_ids --input ~{input_maf} --tumour_id ~{tumour_id} --normal_id ~{normal_id} --output updated_id.maf
@@ -53,8 +57,8 @@ task UpdateMafId{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -63,7 +67,9 @@ task UpdateMafCounts{
         File input_maf
         File input_counts
         String filename_prefix
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils update_maf_counts --input ~{input_maf} --counts ~{input_counts} --output ~{filename_prefix}_updated_counts.maf
@@ -75,8 +81,8 @@ task UpdateMafCounts{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -84,7 +90,9 @@ task UpdateMafCounts{
 task MergeMafs{
     input{
         Array[File] input_mafs
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -97,7 +105,7 @@ task MergeMafs{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

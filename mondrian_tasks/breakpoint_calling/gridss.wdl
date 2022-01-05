@@ -13,8 +13,7 @@ task runGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String? singularity_dir
-        String filename_prefix
+String? singularity_image         String? docker_image        String filename_prefix
     }
     command{
         gridss.sh \
@@ -34,7 +33,7 @@ task runGridss{
         memory: "8 GB"
         cpu: num_threads
         walltime: "240:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.9'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

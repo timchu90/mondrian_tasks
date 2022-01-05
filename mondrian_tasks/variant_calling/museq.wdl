@@ -11,7 +11,9 @@ task runMuseq{
         File reference_fai
         Array[String] intervals
         Int cores
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         mkdir pythonegg
@@ -31,8 +33,8 @@ task runMuseq{
         memory: "12 GB"
         cpu: 1
         walltime: "96:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -40,7 +42,9 @@ task runMuseq{
 task fixMuseqVcf{
     input{
         File vcf_file
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils fix_museq_vcf --input ~{vcf_file} --output output.vcf
@@ -57,8 +61,8 @@ task fixMuseqVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

@@ -4,7 +4,9 @@ version 1.0
 task MarkDuplicates{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command{
@@ -29,8 +31,8 @@ task MarkDuplicates{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -40,7 +42,9 @@ task CollectGcBiasMetrics{
         File input_bam
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -62,8 +66,8 @@ task CollectGcBiasMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -73,7 +77,9 @@ task CollectWgsMetrics{
         File input_bam
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -95,8 +101,8 @@ task CollectWgsMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -105,7 +111,9 @@ task CollectWgsMetrics{
 task CollectInsertSizeMetrics{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -136,8 +144,8 @@ task CollectInsertSizeMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -145,7 +153,9 @@ task CollectInsertSizeMetrics{
 task SortSam{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         picard -Xmx12G -Xms12G SortSam \
@@ -163,15 +173,17 @@ task SortSam{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 task MergeSamFiles{
     input{
         Array[File] input_bams
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         picard -Xmx12G -Xms12G MergeSamFiles \
@@ -189,8 +201,8 @@ task MergeSamFiles{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

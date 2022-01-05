@@ -16,7 +16,8 @@ task BwaMemPaired {
         String cell_id
         String lane_id
         String flowcell_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command {
         alignment_utils bwa_align --metadata_yaml ~{metadata_yaml} \
@@ -31,7 +32,7 @@ task BwaMemPaired {
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'quay.io/mondrianscwgs/alignment:v0.0.9'
-        singularity: '~{singularity_dir}/alignment_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_dir}'
     }
 }

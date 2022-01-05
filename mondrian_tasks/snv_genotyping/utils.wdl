@@ -8,7 +8,9 @@ task genotyper{
         File vcf_file_idx
         Array[String] intervals
         Int num_threads
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "snv_genotyping"
     }
     command<<<
@@ -30,8 +32,8 @@ task genotyper{
         memory: "12 GB"
         cpu: 1
         walltime: "24:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -41,7 +43,9 @@ task SnvGenotypingMetadata{
         File output_csv
         File output_csv_yaml
         File metadata_input
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         snv_genotyping_utils generate_metadata \
@@ -56,7 +60,7 @@ task SnvGenotypingMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/variant:v0.0.9'
-        singularity: '~{singularity_dir}/variant_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

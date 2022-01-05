@@ -12,8 +12,7 @@ task BreakpointMetadata{
         Array[File] svaba_vcf_files
         Array[File] metadata_yaml_files
         Array[String] samples
-        String? singularity_dir
-    }
+String? singularity_image         String? docker_image    }
     command<<<
         breakpoint_utils generate_metadata \
         --consensus_files ~{consensus} ~{consensus_yaml} \
@@ -34,7 +33,7 @@ task BreakpointMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'quay.io/mondrianscwgs/breakpoint:v0.0.9'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.9.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
