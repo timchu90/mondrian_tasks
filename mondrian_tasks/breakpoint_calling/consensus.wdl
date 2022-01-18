@@ -8,7 +8,9 @@ task consensus{
         File gridss
         String filename_prefix
         String sample_id
-String? singularity_image         String? docker_image    }
+        String? singularity_image
+        String? docker_image
+    }
     command<<<
         mkdir tempdir
         breakpoint_utils consensus \

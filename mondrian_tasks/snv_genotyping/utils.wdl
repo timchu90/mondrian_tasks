@@ -10,7 +10,6 @@ task genotyper{
         Int num_threads
         String? singularity_image
         String? docker_image
-
         String filename_prefix = "snv_genotyping"
     }
     command<<<
@@ -45,7 +44,6 @@ task SnvGenotypingMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
-
     }
     command<<<
         snv_genotyping_utils generate_metadata \
@@ -55,6 +53,99 @@ task SnvGenotypingMetadata{
     >>>
     output{
         File metadata_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+task GenerateCellBarcodes{
+    input{
+        File bamfile
+        File baifile
+        String? singularity_image
+        String? docker_image
+    }
+    command<<<
+        snv_genotyping_utils generate_cell_barcodes --bam ~{bamfile} --output barcodes.txt
+    >>>
+    output{
+        File cell_barcodes = "barcodes.txt"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+task RunVartrix{
+    input{
+        File bamfile
+        File baifile
+        File fasta
+        File fasta_fai
+        File vcf_file
+        File cell_barcodes
+        String? singularity_image
+        String? docker_image
+    }
+    command<<<
+        vartrix_linux --bam ~{bamfile} \
+        --fasta ~{fasta} --vcf ~{vcf_file} \
+         --cell-barcodes ~{cell_barcodes} \
+        --scoring-method coverage \
+        --out-barcodes out_snv_barcodes.txt \
+        --out-matrix out_snv_matrix.mtx \
+        --out-variants out_snv_variants.txt \
+        --ref-matrix out_snv_ref.txt \
+        --mapq 20 \
+        --no-duplicates \
+        --primary-alignments
+    >>>
+    output{
+        File out_barcodes = "out_snv_barcodes.txt"
+        File out_variants = "out_snv_variants.txt"
+        File ref_counts = "out_snv_ref.txt"
+        File alt_counts = "out_snv_matrix.mtx"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+task ParseVartrix{
+    input{
+        File barcodes
+        File variants
+        File ref_counts
+        File alt_counts
+        String? singularity_image
+        String? docker_image
+    }
+    command<<<
+        snv_genotyping_utils parse_vartrix \
+        --barcodes ~{barcodes} \
+        --variants ~{variants} \
+        --ref_counts ~{ref_counts} \
+        --alt_counts ~{alt_counts} \
+        --outfile vartrix_parsed.csv.gz
+    >>>
+    output{
+        File outfile = "vartrix_parsed.csv.gz"
+        File outfile_yaml = "vartrix_parsed.csv.gz.yaml"
     }
     runtime{
         memory: "12 GB"

@@ -15,7 +15,9 @@ task runSvaba{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-String? singularity_image         String? docker_image        String filename_prefix
+        String? singularity_image
+        String? docker_image
+        String filename_prefix
     }
     command{
         svaba run -t ~{tumour_bam} -n ~{normal_bam} -G ~{reference} -z -p ~{num_threads} -a ~{filename_prefix}

@@ -12,7 +12,9 @@ task BreakpointMetadata{
         Array[File] svaba_vcf_files
         Array[File] metadata_yaml_files
         Array[String] samples
-String? singularity_image         String? docker_image    }
+        String? singularity_image
+        String? docker_image
+    }
     command<<<
         breakpoint_utils generate_metadata \
         --consensus_files ~{consensus} ~{consensus_yaml} \

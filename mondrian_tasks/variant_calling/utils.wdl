@@ -24,7 +24,9 @@ task VariantMetadata{
         Array[File] sample_mutect_vcf_tbi
         Array[File] metadata_yaml_files
         Array[String] samples
-String? singularity_image         String? docker_image    }
+        String? singularity_image
+        String? docker_image
+    }
     command<<<
         variant_utils generate_metadata \
         --maf_file ~{final_maf} \

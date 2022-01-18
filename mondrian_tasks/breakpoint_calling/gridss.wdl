@@ -13,7 +13,9 @@ task runGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-String? singularity_image         String? docker_image        String filename_prefix
+        String? singularity_image
+        String? docker_image
+        String filename_prefix
     }
     command{
         gridss.sh \

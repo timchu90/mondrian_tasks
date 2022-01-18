@@ -5,7 +5,9 @@ task extractSplitReads{
     input {
         File inputBam
         String outputBam
-String? singularity_image         String? docker_image    }
+        String? singularity_image
+        String? docker_image
+    }
     command {
         samtools view -h ~{inputBam} | lumpy_extractSplitReads_BwaMem -i stdin | samtools view -Sb - > ~{outputBam}
     }
@@ -30,7 +32,9 @@ task lumpyExpress{
         File tumourDiscBam
         File normal_bam
         File tumour_bam
-String? singularity_image         String? docker_image        String filename_prefix
+        String? singularity_image
+        String? docker_image
+        String filename_prefix
     }
     command{
         lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o ~{filename_prefix}_lumpy.vcf
