@@ -1,7 +1,7 @@
 version 1.0
 
 
-task extractSplitReads{
+task ExtractSplitReads{
     input {
         File inputBam
         String outputBam
@@ -24,7 +24,7 @@ task extractSplitReads{
 }
 
 
-task lumpyExpress{
+task LumpyExpress{
     input{
         File normalSplitBam
         File tumourSplitBam

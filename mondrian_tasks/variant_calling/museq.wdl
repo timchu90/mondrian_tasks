@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runMuseq{
+task RunMuseq{
     input{
         File normal_bam
         File normal_bai
@@ -39,7 +39,7 @@ task runMuseq{
 }
 
 
-task fixMuseqVcf{
+task FixMuseqVcf{
     input{
         File vcf_file
         String? singularity_image

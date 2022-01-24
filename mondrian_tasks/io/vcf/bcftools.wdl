@@ -1,6 +1,6 @@
 version 1.0
 
-task concatVcf{
+task ConcatVcf{
     input{
         Array[File] vcf_files
         Array[File] csi_files
@@ -30,7 +30,7 @@ task concatVcf{
     }
 }
 
-task mergeVcf{
+task MergeVcf{
     input{
         Array[File] vcf_files
         Array[File] csi_files
@@ -69,7 +69,7 @@ task mergeVcf{
 }
 
 
-task filterVcf{
+task FilterVcf{
     input{
         File vcf_file
         String? singularity_image
@@ -96,7 +96,7 @@ task filterVcf{
 }
 
 
-task finalizeVcf{
+task FinalizeVcf{
     input{
         File vcf_file
         String filename_prefix

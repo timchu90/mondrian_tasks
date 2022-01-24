@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runConsensusCalling{
+task RunConsensusCalling{
     input{
         File museq_vcf
         File museq_vcf_tbi

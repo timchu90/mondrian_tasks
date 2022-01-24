@@ -1,6 +1,6 @@
 version 1.0
 
-task genotyper{
+task Genotyper{
     input{
         File bam
         File bai

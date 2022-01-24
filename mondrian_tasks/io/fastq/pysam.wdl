@@ -1,6 +1,6 @@
 version 1.0
 
-task generateIntervals{
+task GenerateIntervals{
     input{
         File reference
         Array[String] chromosomes

@@ -3,7 +3,7 @@ version 1.0
 
 
 
-task fastqScreen{
+task FastqScreen{
     input {
         File fastq1
         File fastq2
@@ -58,7 +58,7 @@ task fastqScreen{
     }
 }
 
-task merge_fastqscreen_counts{
+task MergeFastqscreenCounts{
     input{
         Array[File] detailed_counts
         Array[File] summary_counts

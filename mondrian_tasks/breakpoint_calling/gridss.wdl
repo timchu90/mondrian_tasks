@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runGridss{
+task RunGridss{
     input{
         File normal_bam
         File tumour_bam

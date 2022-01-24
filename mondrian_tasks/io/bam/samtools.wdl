@@ -24,7 +24,7 @@ task SamToBam{
     }
 }
 
-task indexBam{
+task IndexBam{
     input{
         File inputBam
         String outputBai
@@ -74,7 +74,7 @@ task Flagstat{
 }
 
 
-task mergeBams{
+task MergeBams{
     input{
         Array[File]+ inputBams
         String outputFile
@@ -97,7 +97,7 @@ task mergeBams{
     }
 }
 
-task viewBam{
+task ViewBam{
     input{
         File inputBam
         String outputBam
@@ -122,7 +122,7 @@ task viewBam{
     }
 }
 
-task sortBam{
+task SortBam{
     input {
         File inputBam
         String? singularity_image

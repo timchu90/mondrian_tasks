@@ -1,7 +1,7 @@
 version 1.0
 
 
-task BwaMemPaired {
+task BwaMemPaired{
     input {
         File fastq1
         File fastq2

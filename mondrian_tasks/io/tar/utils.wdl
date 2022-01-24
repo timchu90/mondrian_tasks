@@ -1,6 +1,6 @@
 version 1.0
 
-task tarFiles{
+task TarFiles{
     input{
         Array[File] inputs
         String? singularity_image

@@ -26,7 +26,7 @@ task TagBamWithCellid{
 }
 
 
-task bamMerge{
+task BamMerge{
     input{
         Array[File] input_bams
         Array[String] cell_ids

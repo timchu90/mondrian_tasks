@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runSvaba{
+task RunSvaba{
     input{
         File normal_bam
         File normal_bai

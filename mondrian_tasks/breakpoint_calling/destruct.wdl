@@ -2,7 +2,7 @@ version 1.0
 
 
 
-task runDestruct{
+task RunDestruct{
     input{
         File normal_bam
         File tumour_bam

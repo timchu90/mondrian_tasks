@@ -25,7 +25,7 @@ task GetSampleId{
 
 
 
-task runMutect{
+task RunMutect{
     input{
         File normal_bam
         File normal_bai
@@ -68,7 +68,7 @@ task runMutect{
     }
 }
 
-task filterMutect{
+task FilterMutect{
     input{
         File reference
         File reference_fai

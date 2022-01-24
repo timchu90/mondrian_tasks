@@ -56,7 +56,7 @@ task GenerateChromDepth{
 }
 
 
-task merge_chrom_depths{
+task MergeChromDepths{
     input{
         Array[File] inputs
         String? singularity_image
@@ -79,7 +79,7 @@ task merge_chrom_depths{
 }
 
 
-task run_strelka{
+task RunStrelka{
     input{
         File normal_bam
         File normal_bai

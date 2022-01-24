@@ -9,15 +9,16 @@ task RunReadCounter{
         File control_baifile
         File contaminated_bamfile
         File contaminated_baifile
+        File repeats_satellite_regions
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
 
     }
     command<<<
-        hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes}
+        hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
     >>>
     output{
         Array[File] wigs = glob('output*/*.wig')
@@ -133,7 +134,7 @@ task PlotHmmcopy{
 }
 
 
-task plotHeatmap{
+task PlotHeatmap{
     input{
         File reads
         File reads_yaml
@@ -161,7 +162,7 @@ task plotHeatmap{
 }
 
 
-task addMappability{
+task AddMappability{
     input{
         File infile
         File infile_yaml
@@ -188,7 +189,7 @@ task addMappability{
 }
 
 
-task cellCycleClassifier{
+task CellCycleClassifier{
     input{
         File hmmcopy_reads
         File hmmcopy_metrics
@@ -221,7 +222,7 @@ task cellCycleClassifier{
 
 }
 
-task addQuality{
+task AddQuality{
     input{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
@@ -249,7 +250,7 @@ task addQuality{
     }
 }
 
-task createSegmentsTar{
+task CreateSegmentsTar{
     input{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
@@ -280,7 +281,7 @@ task createSegmentsTar{
 
 
 
-task generateHtmlReport{
+task GenerateHtmlReport{
     input{
         File metrics
         File metrics_yaml
@@ -312,7 +313,7 @@ task generateHtmlReport{
 }
 
 
-task addClusteringOrder{
+task AddClusteringOrder{
     input{
         File metrics
         File metrics_yaml

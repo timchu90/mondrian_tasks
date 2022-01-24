@@ -1,7 +1,7 @@
 version 1.0
 
 
-task rewrite_csv{
+task RewriteCsv{
     input{
         File infile
         String dtypes
@@ -26,7 +26,7 @@ task rewrite_csv{
 }
 
 
-task concatenate_csv {
+task ConcatenateCsv {
     input {
         Array[File] inputfile
         Array[File] inputyaml
@@ -53,7 +53,7 @@ task concatenate_csv {
 }
 
 
-task merge_csv{
+task MergeCsv{
     input{
         Array[File] inputfiles
         Array[File] inputyamls
@@ -81,7 +81,7 @@ task merge_csv{
 
 
 
-task finalize_csv {
+task FinalizeCsv {
     input {
         Array[File] inputfile
         String? singularity_image

@@ -1,6 +1,6 @@
 version 1.0
 
-task consensus{
+task Consensus{
     input{
         File destruct
         File lumpy
