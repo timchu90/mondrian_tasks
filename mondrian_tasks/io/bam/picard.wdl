@@ -28,7 +28,7 @@ task MarkDuplicates{
         File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
@@ -63,7 +63,7 @@ task CollectGcBiasMetrics{
         File chart_pdf="~{filename_prefix}_gcbias_chart.pdf"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
@@ -98,7 +98,7 @@ task CollectWgsMetrics{
         File metrics_txt="~{filename_prefix}_wgsmetrics.txt"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
@@ -141,7 +141,7 @@ task CollectInsertSizeMetrics{
         File histogram_pdf='~{filename_prefix}_insert_histogram.pdf'
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
@@ -170,7 +170,7 @@ task SortSam{
         File output_bam="markdups.bam"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'
@@ -198,7 +198,7 @@ task MergeSamFiles{
         File output_bam="merged.bam"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
         docker: '~{docker_image}'

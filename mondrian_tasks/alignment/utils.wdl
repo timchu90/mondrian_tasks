@@ -67,12 +67,14 @@ task AddContaminationStatus{
     input{
         File input_csv
         File input_yaml
+        String reference_genome
         String? singularity_image
         String? docker_image
 
     }
     command<<<
-        alignment_utils add_contamination_status --infile ~{input_csv} --outfile output.csv.gz
+        alignment_utils add_contamination_status --infile ~{input_csv} --outfile output.csv.gz \
+        --reference ~{reference_genome}
     >>>
     output{
         File output_csv = "output.csv.gz"
