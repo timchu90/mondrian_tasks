@@ -141,7 +141,7 @@ task AlignmentMetadata{
         --control ~{control_bam} ~{control_bai} \
         --contaminated ~{contaminated_bam} ~{contaminated_bai} \
         --metrics ~{metrics} ~{metrics_yaml} \
-        --gc_metrics ~{gc_metrics} ~{gc_metrics} \
+        --gc_metrics ~{gc_metrics} ~{gc_metrics_yaml} \
         --fastqscreen_detailed ~{fastqscreen_detailed} ~{fastqscreen_detailed_yaml} \
         --tarfile ~{tarfile} --metadata_output metadata.yaml --metadata_input ~{metadata_input}
     >>>
