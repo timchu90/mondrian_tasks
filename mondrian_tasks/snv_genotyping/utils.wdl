@@ -41,6 +41,8 @@ task SnvGenotypingMetadata{
     input{
         File output_csv
         File output_csv_yaml
+        File vartrix_output_csv
+        File vartrix_output_csv_yaml
         File metadata_input
         String? singularity_image
         String? docker_image
@@ -48,6 +50,7 @@ task SnvGenotypingMetadata{
     command<<<
         snv_genotyping_utils generate_metadata \
         --outputs ~{output_csv} ~{output_csv_yaml} \
+        --vartrix_outputs ~{vartrix_output_csv} ~{vartrix_output_csv_yaml} \
         --metadata_input ~{metadata_input} \
         --metadata_output metadata.yaml
     >>>
