@@ -1,6 +1,35 @@
 version 1.0
 
 
+task TrimGalore{
+    input {
+        File r1
+        File r2
+        String adapter1
+        String adapter2
+        String? singularity_image
+        String? docker_image
+
+    }
+    command <<<
+        alignment_utils trim_galore --r1 ~{r1} --r2 ~{r2} \
+        --output_r1 trimmed_r1.fastq.gz --output_r2 trimmed_r2.fastq.gz \
+        --adapter1 ~{adapter1} --adapter2 ~{adapter2} --tempdir tempdir
+    >>>
+    output{
+        File output_r1 = "trimmed_r1.fastq.gz"
+        File output_r2 = "trimmed_r2.fastq.gz"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
 task TagBamWithCellid{
     input {
         File infile
