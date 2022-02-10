@@ -1,5 +1,11 @@
 version 1.0
 
+struct Lane{
+    File fastq1
+    File fastq2
+    String lane_id
+    String flowcell_id
+}
 
 task AlignPostprocessAllLanes{
     input {
