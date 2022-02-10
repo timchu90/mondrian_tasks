@@ -1,6 +1,84 @@
 version 1.0
 
 
+task AlignPostprocessAllLanes{
+    input {
+        Array[Lane] fastq_files
+        File metadata_yaml
+        File human_reference
+        File human_reference_fa_fai
+        File human_reference_fa_amb
+        File human_reference_fa_ann
+        File human_reference_fa_bwt
+        File human_reference_fa_pac
+        File human_reference_fa_sa
+        File mouse_reference
+        File mouse_reference_fa_fai
+        File mouse_reference_fa_amb
+        File mouse_reference_fa_ann
+        File mouse_reference_fa_bwt
+        File mouse_reference_fa_pac
+        File mouse_reference_fa_sa
+        File salmon_reference
+        File salmon_reference_fa_fai
+        File salmon_reference_fa_amb
+        File salmon_reference_fa_ann
+        File salmon_reference_fa_bwt
+        File salmon_reference_fa_pac
+        File salmon_reference_fa_sa
+        String cell_id
+        String adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGAC"
+        String adapter2 = "CTGTCTCTTATACACATCTGACGCTGCCGACGA"
+        Int min_mqual=20
+        Int min_bqual=20
+        Boolean count_unpaired=false
+        String? singularity_image
+        String? docker_image
+    }
+    command {
+        alignment_utils alignment \
+        --fastq_files ~{write_json(fastq_files)} \
+        --metadata_yaml ~{metadata_yaml} \
+        --human_reference ~{human_reference} \
+        --mouse_reference ~{mouse_reference} \
+        --salmon_reference ~{salmon_reference} \
+        --tempdir tempdir \
+        --adapter1 ~{adapter1} \
+        --adapter2 ~{adapter2} \
+        --cell_id ~{cell_id} \
+        --wgs_metrics_mqual ~{min_mqual} \
+        --wgs_metrics_bqual ~{min_bqual} \
+        --wgs_metrics_count_unpaired ~{count_unpaired} \
+        --bam_output aligned.bam \
+        --metrics_output metrics.csv.gz \
+        --metrics_gc_output gc_metrics.csv.gz \
+        --fastqscreen_detailed_output detailed_fastqscreen.csv.gz \
+        --fastqscreen_summary_output summary_fastqscreen.csv.gz \
+        --tar_output ~{cell_id}.tar.gz
+    }
+    output {
+        File bam = "aligned.bam"
+        File bai = "aligned.bam.bai"
+        File metrics = "metrics.csv.gz"
+        File metrics_yaml = "metrics.csv.gz.yaml"
+        File gc_metrics = "gc_metrics.csv.gz"
+        File gc_metrics_yaml = "gc_metrics.csv.gz.yaml"
+        File fastqscreen_detailed_metrics = "detailed_fastqscreen.csv.gz"
+        File fastqscreen_detailed_metrics_yaml = "detailed_fastqscreen.csv.gz.yaml"
+        File fastqscreen_summary_metrics = "summary_fastqscreen.csv.gz"
+        File fastqscreen_summary_metrics_yaml = "summary_fastqscreen.csv.gz.yaml"
+        File tar_output = "~{cell_id}.tar.gz"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "24:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
 task TrimGalore{
     input {
         File r1
