@@ -31,7 +31,7 @@ task RunMuseq{
     }
     runtime{
         memory: "12 GB"
-        cpu: 1
+        cpu: "~{cores}"
         walltime: "96:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
