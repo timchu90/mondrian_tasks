@@ -28,11 +28,13 @@ task runMuseq{
         Array[File] vcf_files = glob("*.vcf")
     }
     runtime{
-        memory: "12 GB"
-        cpu: 1
+        memory: 12 * cores + "GB"
+        cpu: cores
         walltime: "96:00"
         docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
         singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        disks: 'local-disk 500 HDD'
+        preemptible: 0
     }
 }
 

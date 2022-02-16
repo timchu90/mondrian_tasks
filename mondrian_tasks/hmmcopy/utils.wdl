@@ -11,6 +11,7 @@ task RunReadCounter{
         File contaminated_baifile
         Array[String] chromosomes
         String? singularity_dir
+        Int diskSize = ceil((3*(size(bamfile, "GB") + size(control_bamfile, "GB") + size(contaminated_bamfile, "GB"))))
     }
     command<<<
         hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
@@ -24,6 +25,8 @@ task RunReadCounter{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
+        preemptible: 0
+        disks: 'local-disk ' + diskSize + ' HDD'
         docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
         singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
     }

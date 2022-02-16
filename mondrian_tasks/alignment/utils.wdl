@@ -49,12 +49,13 @@ task bamMerge{
         File control_outfile_bai = "~{filename_prefix}_control.bam.bai"
     }
     runtime{
-        memory: "12 GB"
+        memory: 12 * ncores + "GB"
         cpu: ncores
         walltime: "96:00"
         docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
         singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
-        disks: "local-disk " + length(input_bams) + " HDD"
+        disks: if length(input_bams) > 3000 then "local-disk 5999 LOCAL" else if length(input_bams) > 1500 then "local-disk 2999 LOCAL" else if length(input_bams) > 750 then "local-disk 1499 LOCAL" else "local-disk 749 LOCAL"        
+        preemptible: 0
     }
 }
 

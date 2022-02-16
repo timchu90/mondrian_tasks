@@ -30,6 +30,7 @@ task fastqScreen{
         File salmon_reference_fa_sa
         String cell_id
         String? singularity_dir
+        Int diskSize = ceil((3*(size(fastq1, "GB") + size(fastq2, "GB"))) + 30)
     }
     command {
         alignment_utils fastqscreen --r1 ~{fastq1} --r2 ~{fastq2} \
@@ -54,6 +55,7 @@ task fastqScreen{
         walltime: "48:00"
         docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
         singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        disks: "local-disk " + diskSize + " HDD"
     }
 }
 
