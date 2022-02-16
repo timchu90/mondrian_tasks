@@ -9,14 +9,17 @@ task RunReadCounter{
         File control_baifile
         File contaminated_bamfile
         File contaminated_baifile
+        File repeats_satellite_regions
         Array[String] chromosomes
         String? singularity_dir
         Int diskSize = ceil((3*(size(bamfile, "GB") + size(control_bamfile, "GB") + size(contaminated_bamfile, "GB"))))
+        String? singularity_image
+        String? docker_image
     }
     command<<<
-        hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes}
-        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes}
+        hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
     >>>
     output{
         Array[File] wigs = glob('output*/*.wig')
@@ -27,8 +30,8 @@ task RunReadCounter{
         walltime: "48:00"
         preemptible: 0
         disks: 'local-disk ' + diskSize + ' HDD'
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -39,7 +42,9 @@ task CorrectReadCount{
         File gc_wig
         File map_wig
         String map_cutoff
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
@@ -53,8 +58,8 @@ task CorrectReadCount{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -62,7 +67,9 @@ task CorrectReadCount{
 task RunHmmcopy{
     input{
         File corrected_wig
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils run_hmmcopy \
@@ -89,8 +96,8 @@ task RunHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -107,7 +114,9 @@ task PlotHmmcopy{
         File metrics_yaml
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
@@ -122,24 +131,27 @@ task PlotHmmcopy{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task plotHeatmap{
+task PlotHeatmap{
     input{
         File reads
         File reads_yaml
         File metrics
         File metrics_yaml
+        Array[String] chromosomes
         String filename_prefix = "heatmap"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         hmmcopy_utils heatmap --reads ~{reads} --metrics ~{metrics} \
-        --output ~{filename_prefix}.pdf
+        --output ~{filename_prefix}.pdf --chromosomes ~{sep=" "chromosomes}
      >>>
     output{
         File heatmap_pdf = '~{filename_prefix}.pdf'
@@ -148,17 +160,19 @@ task plotHeatmap{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task addMappability{
+task AddMappability{
     input{
         File infile
         File infile_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -172,19 +186,21 @@ task addMappability{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }
 
 
-task cellCycleClassifier{
+task CellCycleClassifier{
     input{
         File hmmcopy_reads
         File hmmcopy_metrics
         File alignment_metrics
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     cell_cycle_classifier train-classify ~{hmmcopy_reads} ~{hmmcopy_metrics} ~{alignment_metrics} output.csv.gz
@@ -204,20 +220,22 @@ task cellCycleClassifier{
         memory: "18 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }
 
-task addQuality{
+task AddQuality{
     input{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -231,18 +249,20 @@ task addQuality{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
-task createSegmentsTar{
+task CreateSegmentsTar{
     input{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix
     }
     command<<<
@@ -258,14 +278,14 @@ task createSegmentsTar{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
 
-task generateHtmlReport{
+task GenerateHtmlReport{
     input{
         File metrics
         File metrics_yaml
@@ -273,7 +293,9 @@ task generateHtmlReport{
         File gc_metrics_yaml
         File reference_gc
         String filename_prefix
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils generate_html_report \
@@ -289,20 +311,22 @@ task generateHtmlReport{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task addClusteringOrder{
+task AddClusteringOrder{
     input{
         File metrics
         File metrics_yaml
         File reads
         File reads_yaml
         String filename_prefix = "added_clustering_order"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     hmmcopy_utils add_clustering_order \
@@ -317,8 +341,51 @@ task addClusteringOrder{
         memory: "8 GB"
         cpu: 1
         walltime: "6:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/hmmcopy:v0.0.8'
-        singularity: '~{singularity_dir}/hmmcopy_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+task HmmcopyMetadata{
+    input{
+        File params
+        File params_yaml
+        File segments
+        File segments_yaml
+        File metrics
+        File metrics_yaml
+        File reads
+        File reads_yaml
+        File heatmap
+        File segments_pass
+        File segments_fail
+        File metadata_input
+        String? singularity_image
+        String? docker_image
+
+    }
+    command<<<
+        hmmcopy_utils generate_metadata \
+        --params ~{params} ~{params_yaml} \
+        --segments ~{segments} ~{segments_yaml} \
+        --metrics ~{metrics} ~{metrics_yaml} \
+        --reads ~{reads} ~{reads_yaml} \
+        --segments_tar_pass ~{segments_pass} \
+        --segments_tar_fail ~{segments_fail} \
+        --heatmap ~{heatmap} \
+        --metadata_output metadata.yaml \
+        --metadata_input ~{metadata_input}
+    >>>
+    output{
+        File metadata_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "12 GB"
+        cpu: 1
+        walltime: "48:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

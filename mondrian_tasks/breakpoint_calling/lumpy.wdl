@@ -1,11 +1,12 @@
 version 1.0
 
 
-task extractSplitReads{
+task ExtractSplitReads{
     input {
         File inputBam
         String outputBam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command {
         samtools view -h ~{inputBam} | lumpy_extractSplitReads_BwaMem -i stdin | samtools view -Sb - > ~{outputBam}
@@ -17,13 +18,13 @@ task extractSplitReads{
         memory: "8 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.8'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task lumpyExpress{
+task LumpyExpress{
     input{
         File normalSplitBam
         File tumourSplitBam
@@ -31,7 +32,8 @@ task lumpyExpress{
         File tumourDiscBam
         File normal_bam
         File tumour_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
         String filename_prefix
     }
     command{
@@ -44,7 +46,7 @@ task lumpyExpress{
         memory: "40 GB"
         cpu: 1
         walltime: "240:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.8'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

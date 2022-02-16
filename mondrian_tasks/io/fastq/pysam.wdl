@@ -1,10 +1,12 @@
 version 1.0
 
-task generateIntervals{
+task GenerateIntervals{
     input{
         File reference
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils generate_intervals --reference ~{reference} --chromosomes ~{sep=" "  chromosomes} > intervals.txt
@@ -16,7 +18,7 @@ task generateIntervals{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

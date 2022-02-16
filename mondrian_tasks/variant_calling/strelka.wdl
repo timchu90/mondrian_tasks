@@ -4,7 +4,9 @@ task GetGenomeSize{
     input{
         File reference
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils genome_size --reference ~{reference} --chromosomes ~{sep=" "  chromosomes} > genome_size.txt
@@ -16,8 +18,8 @@ task GetGenomeSize{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -30,7 +32,9 @@ task GenerateChromDepth{
         File reference_fai
         Int cores
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         for interval in ~{sep=" "chromosomes}
@@ -46,17 +50,19 @@ task GenerateChromDepth{
         memory: 12 * cores + "GB"
         cpu: cores
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 250 HDD'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task merge_chrom_depths{
+task MergeChromDepths{
     input{
         Array[File] inputs
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils merge_chromosome_depths_strelka --inputs ~{sep=" " inputs} --output output.txt
@@ -68,13 +74,13 @@ task merge_chrom_depths{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task run_strelka{
+task RunStrelka{
     input{
         File normal_bam
         File normal_bai
@@ -107,7 +113,9 @@ task run_strelka{
         Float ssnv_contam_tolerance=0.15
         Float indel_contam_tolerance=0.15
         Int cores
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         for interval in ~{sep=" "intervals}
@@ -149,9 +157,9 @@ task run_strelka{
         memory: 12 * cores + "GB"
         cpu: cores
         walltime: "96:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 500 HDD'
         preemptible: 0
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

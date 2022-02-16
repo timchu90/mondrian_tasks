@@ -3,7 +3,9 @@ version 1.0
 task GetSampleId{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
 
@@ -16,15 +18,15 @@ task GetSampleId{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 250 HDD'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
 
-task runMutect{
+task RunMutect{
     input{
         File normal_bam
         File normal_bai
@@ -36,7 +38,9 @@ task runMutect{
         Array[String] intervals
         Int cores
         String normal_sample_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         mkdir raw_data
@@ -60,20 +64,22 @@ task runMutect{
         memory: 12 * cores + "GB"
         cpu: cores
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 500 HDD'
         preemptible: 0
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
-task filterMutect{
+task FilterMutect{
     input{
         File reference
         File reference_fai
         File reference_dict
         File vcf_file
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
             gatk FilterMutectCalls -R ~{reference} -V ~{vcf_file} -O filtered.vcf
@@ -85,9 +91,9 @@ task filterMutect{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 500 HDD'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

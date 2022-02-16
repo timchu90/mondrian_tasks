@@ -1,15 +1,16 @@
 version 1.0
 
 
-task vcf_reheader_id{
+task VcfReheaderId{
     input{
         File input_vcf
         File normal_bam
         File tumour_bam
         String vcf_tumour_id
         String vcf_normal_id
-        String? singularity_dir
         Int diskSize = ceil(2*(size(normal_bam,"GB") + size(tumor_bam, "GB")))
+        String? singularity_image
+        String? docker_image
     }
     command<<<
         variant_utils vcf_reheader_id \
@@ -28,7 +29,7 @@ task vcf_reheader_id{
         cpu: 1
         disks: "local-disk " + diskSize + " HDD"
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

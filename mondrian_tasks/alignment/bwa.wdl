@@ -1,7 +1,7 @@
 version 1.0
 
 
-task BwaMemPaired {
+task BwaMemPaired{
     input {
         File fastq1
         File fastq2
@@ -12,19 +12,18 @@ task BwaMemPaired {
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String library_id
+        File metadata_yaml
+        String cell_id
         String lane_id
-        String sample_id
-        String center
-        String? singularity_dir
+        String flowcell_id
+        String? singularity_image
+        String? docker_image
     }
     command {
-        bwa mem \
-        -R  $(echo "@RG\tID:~{sample_id}_~{library_id}_~{lane_id}\tSM:~{sample_id}\tLB:~{library_id}\tPL:ILLUMINA\tPU:~{lane_id}\tCN:~{center}") \
-        -C -M  \
-        ~{reference} \
-        ~{fastq1} ~{fastq2} \
-        | samtools view -bSh - > aligned.bam
+        alignment_utils bwa_align --metadata_yaml ~{metadata_yaml} \
+        --fastq1 ~{fastq1} --fastq2 ~{fastq2}  --reference ~{reference} \
+        --output aligned.bam --cell_id ~{cell_id} --lane_id ~{lane_id} \
+        --flowcell_id ~{flowcell_id}
     }
     output {
         File bam = "aligned.bam"
@@ -33,7 +32,7 @@ task BwaMemPaired {
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

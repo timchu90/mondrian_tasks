@@ -4,7 +4,9 @@ version 1.0
 task RunFastqc{
     input{
         File fastq
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         fastqc --outdir=`pwd` ~{fastq}
@@ -20,7 +22,7 @@ task RunFastqc{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runSvaba{
+task RunSvaba{
     input{
         File normal_bam
         File normal_bai
@@ -15,7 +15,8 @@ task runSvaba{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
         String filename_prefix
     }
     command{
@@ -25,11 +26,11 @@ task runSvaba{
         File output_vcf = "~{filename_prefix}.svaba.somatic.sv.vcf.gz"
     }
     runtime{
-        memory: "8 GB"
+        memory: "16 GB"
         cpu: num_threads
         walltime: "240:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.8'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }

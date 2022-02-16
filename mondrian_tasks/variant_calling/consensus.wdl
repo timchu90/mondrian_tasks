@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runConsensusCalling{
+task RunConsensusCalling{
     input{
         File museq_vcf
         File museq_vcf_tbi
@@ -12,7 +12,8 @@ task runConsensusCalling{
         File mutect_vcf
         File mutect_vcf_tbi
         Array[String] chromosomes
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command<<<
             variant_utils consensus --museq_vcf ~{museq_vcf} \
@@ -28,8 +29,8 @@ task runConsensusCalling{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

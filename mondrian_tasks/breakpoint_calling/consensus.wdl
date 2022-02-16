@@ -1,6 +1,6 @@
 version 1.0
 
-task consensus{
+task Consensus{
     input{
         File destruct
         File lumpy
@@ -8,7 +8,8 @@ task consensus{
         File gridss
         String filename_prefix
         String sample_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command<<<
         mkdir tempdir
@@ -26,7 +27,7 @@ task consensus{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.8'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

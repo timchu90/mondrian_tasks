@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runGridss{
+task RunGridss{
     input{
         File normal_bam
         File tumour_bam
@@ -13,7 +13,8 @@ task runGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
         String filename_prefix
     }
     command{
@@ -34,7 +35,7 @@ task runGridss{
         memory: "8 GB"
         cpu: num_threads
         walltime: "240:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/breakpoint:v0.0.8'
-        singularity: '~{singularity_dir}/breakpoint_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

@@ -1,7 +1,7 @@
 version 1.0
 
 
-task runMuseq{
+task RunMuseq{
     input{
         File normal_bam
         File normal_bai
@@ -11,7 +11,9 @@ task runMuseq{
         File reference_fai
         Array[String] intervals
         Int cores
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         mkdir pythonegg
@@ -31,18 +33,20 @@ task runMuseq{
         memory: 12 * cores + "GB"
         cpu: cores
         walltime: "96:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
         disks: 'local-disk 500 HDD'
         preemptible: 0
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task fixMuseqVcf{
+task FixMuseqVcf{
     input{
         File vcf_file
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         variant_utils fix_museq_vcf --input ~{vcf_file} --output output.vcf
@@ -59,8 +63,8 @@ task fixMuseqVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.8'
-        singularity: '~{singularity_dir}/variant_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

@@ -1,11 +1,13 @@
 version 1.0
 
-task concatVcf{
+task ConcatVcf{
     input{
         Array[File] vcf_files
         Array[File] csi_files
         Array[File] tbi_files
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         bcftools concat -a -O z -o merged.vcf.gz ~{sep=" " vcf_files}
@@ -23,17 +25,19 @@ task concatVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
-task mergeVcf{
+task MergeVcf{
     input{
         Array[File] vcf_files
         Array[File] csi_files
         Array[File] tbi_files
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = 'merged_sorted'
     }
     command<<<
@@ -59,16 +63,18 @@ task mergeVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task filterVcf{
+task FilterVcf{
     input{
         File vcf_file
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         bcftools view -O z -f .,PASS -o filtered.vcf.gz ~{vcf_file}
@@ -84,17 +90,19 @@ task filterVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 
-task finalizeVcf{
+task FinalizeVcf{
     input{
         File vcf_file
         String filename_prefix
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         vcf-sort ~{vcf_file} > vcf_uncompressed.vcf
@@ -111,7 +119,7 @@ task finalizeVcf{
         memory: "12 GB"
         cpu: 1
         walltime: "8:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/variant:v0.0.6'
-        singularity: '~{singularity_dir}/variant_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

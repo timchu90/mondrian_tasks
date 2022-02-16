@@ -4,7 +4,9 @@ version 1.0
 task MarkDuplicates{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command{
@@ -26,11 +28,11 @@ task MarkDuplicates{
         File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -40,7 +42,9 @@ task CollectGcBiasMetrics{
         File input_bam
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -59,11 +63,11 @@ task CollectGcBiasMetrics{
         File chart_pdf="~{filename_prefix}_gcbias_chart.pdf"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -73,7 +77,9 @@ task CollectWgsMetrics{
         File input_bam
         File reference
         File reference_fai
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -92,11 +98,11 @@ task CollectWgsMetrics{
         File metrics_txt="~{filename_prefix}_wgsmetrics.txt"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -105,7 +111,9 @@ task CollectWgsMetrics{
 task CollectInsertSizeMetrics{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
         String filename_prefix = "output"
     }
     command<<<
@@ -133,11 +141,11 @@ task CollectInsertSizeMetrics{
         File histogram_pdf='~{filename_prefix}_insert_histogram.pdf'
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -145,7 +153,9 @@ task CollectInsertSizeMetrics{
 task SortSam{
     input{
         File input_bam
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         picard -Xmx12G -Xms12G SortSam \
@@ -160,18 +170,20 @@ task SortSam{
         File output_bam="markdups.bam"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
 task MergeSamFiles{
     input{
         Array[File] input_bams
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         picard -Xmx12G -Xms12G MergeSamFiles \
@@ -186,11 +198,11 @@ task MergeSamFiles{
         File output_bam="merged.bam"
     }
     runtime{
-        memory: "12 GB"
+        memory: "18 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.6'
-        singularity: '~{singularity_dir}/alignment_v0.0.6.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 

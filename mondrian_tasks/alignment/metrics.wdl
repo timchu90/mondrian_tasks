@@ -9,7 +9,9 @@ task CollectMetrics{
         String cell_id
         File coverage_metrics
         File coverage_metrics_yaml
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         alignment_utils collect_metrics \
@@ -29,8 +31,8 @@ task CollectMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -39,7 +41,9 @@ task CollectGcMetrics{
     input{
         File infile
         String cell_id
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
         alignment_utils collect_gc_metrics \
@@ -55,8 +59,8 @@ task CollectGcMetrics{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
@@ -66,7 +70,9 @@ task CoverageMetrics{
         File bamfile
         File bamfile_bai
         String filename_prefix="output"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     alignment_utils coverage_metrics --bamfile ~{bamfile} --output ~{filename_prefix}.csv.gz
@@ -79,8 +85,8 @@ task CoverageMetrics{
         memory: "22 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 
 }
@@ -93,7 +99,9 @@ task AddMetadata{
         File metrics_yaml
         File metadata_yaml
         String filename_prefix="output"
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
+
     }
     command<<<
     alignment_utils add_metadata --metrics ~{metrics} --metadata ~{metadata_yaml} --output ~{filename_prefix}.csv.gz
@@ -106,7 +114,7 @@ task AddMetadata{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

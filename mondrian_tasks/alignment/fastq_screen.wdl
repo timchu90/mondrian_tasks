@@ -3,7 +3,7 @@ version 1.0
 
 
 
-task fastqScreen{
+task FastqScreen{
     input {
         File fastq1
         File fastq2
@@ -29,8 +29,9 @@ task fastqScreen{
         File salmon_reference_fa_pac
         File salmon_reference_fa_sa
         String cell_id
-        String? singularity_dir
         Int diskSize = ceil((3*(size(fastq1, "GB") + size(fastq2, "GB"))) + 30)
+        String? singularity_image
+        String? docker_image
     }
     command {
         alignment_utils fastqscreen --r1 ~{fastq1} --r2 ~{fastq2} \
@@ -53,17 +54,18 @@ task fastqScreen{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
         disks: "local-disk " + diskSize + " HDD"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }
 
-task merge_fastqscreen_counts{
+task MergeFastqscreenCounts{
     input{
         Array[File] detailed_counts
         Array[File] summary_counts
-        String? singularity_dir
+        String? singularity_image
+        String? docker_image
     }
     command<<<
         alignment_utils merge_fastqscreen_counts \
@@ -82,7 +84,7 @@ task merge_fastqscreen_counts{
         memory: "12 GB"
         cpu: 1
         walltime: "48:00"
-        docker: 'us.gcr.io/nygc-dlp-s-c0c0/alignment:v0.0.8'
-        singularity: '~{singularity_dir}/alignment_v0.0.8.sif'
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
     }
 }

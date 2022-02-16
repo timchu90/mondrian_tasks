@@ -1,6 +1,6 @@
 version 1.0
 
-task copyFiles {
+task CopyFiles {
     input {
         Array[File] infile
         String out_dir
