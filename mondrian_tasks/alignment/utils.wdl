@@ -7,31 +7,24 @@ struct Lane{
     String flowcell_id
 }
 
+struct Reference{
+    String genome_name
+    File reference
+    File reference_fa_fai
+    File reference_fa_amb
+    File reference_fa_ann
+    File reference_fa_bwt
+    File reference_fa_pac
+    File reference_fa_sa
+}
+
+
 task AlignPostprocessAllLanes{
     input {
         Array[Lane] fastq_files
         File metadata_yaml
-        File human_reference
-        File human_reference_fa_fai
-        File human_reference_fa_amb
-        File human_reference_fa_ann
-        File human_reference_fa_bwt
-        File human_reference_fa_pac
-        File human_reference_fa_sa
-        File mouse_reference
-        File mouse_reference_fa_fai
-        File mouse_reference_fa_amb
-        File mouse_reference_fa_ann
-        File mouse_reference_fa_bwt
-        File mouse_reference_fa_pac
-        File mouse_reference_fa_sa
-        File salmon_reference
-        File salmon_reference_fa_fai
-        File salmon_reference_fa_amb
-        File salmon_reference_fa_ann
-        File salmon_reference_fa_bwt
-        File salmon_reference_fa_pac
-        File salmon_reference_fa_sa
+        Reference reference
+        Array[Reference] supplementary_references
         String cell_id
         String adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGAC"
         String adapter2 = "CTGTCTCTTATACACATCTGACGCTGCCGACGA"
@@ -45,9 +38,9 @@ task AlignPostprocessAllLanes{
         alignment_utils alignment \
         --fastq_files ~{write_json(fastq_files)} \
         --metadata_yaml ~{metadata_yaml} \
-        --human_reference ~{human_reference} \
-        --mouse_reference ~{mouse_reference} \
-        --salmon_reference ~{salmon_reference} \
+        --reference ~{reference.reference} \
+        --reference_name ~{reference.genome_name} \
+        --supplementary_references_json ~{write_json(supplementary_references)} \
         --tempdir tempdir \
         --adapter1 ~{adapter1} \
         --adapter2 ~{adapter2} \
