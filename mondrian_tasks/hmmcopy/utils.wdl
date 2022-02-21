@@ -26,7 +26,7 @@ task RunReadCounter{
     runtime{
         memory: "12 GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "96:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
