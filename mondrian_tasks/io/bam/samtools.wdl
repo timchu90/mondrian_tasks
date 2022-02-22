@@ -6,7 +6,8 @@ task SamToBam{
         String outputSam
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command{
         samtools view -bSh ${inputBam} > ${outputSam}
@@ -16,9 +17,9 @@ task SamToBam{
         File samfile = outputSam
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -30,7 +31,8 @@ task IndexBam{
         String outputBai
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command{
     samtools index ${inputBam} ${outputBai}
@@ -40,9 +42,9 @@ task IndexBam{
         File indexfile = outputBai
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -51,11 +53,11 @@ task IndexBam{
 task Flagstat{
     input{
         File input_bam
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
 
     command{
@@ -65,9 +67,9 @@ task Flagstat{
         File flagstat_txt = '~{filename_prefix}_flagstat.txt'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -80,7 +82,8 @@ task MergeBams{
         String outputFile
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command{
         samtools merge ${outputFile} ${sep=' ' inputBams}
@@ -89,9 +92,9 @@ task MergeBams{
         File mergedBam = outputFile
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -105,7 +108,8 @@ task ViewBam{
         String samtools_flags
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command{
         samtools view ~{samtools_flags}  ~{"-F " + bam_flag} ${inputBam} > ${outputBam}
@@ -114,9 +118,9 @@ task ViewBam{
         File bamFile = outputBam
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -127,7 +131,8 @@ task SortBam{
         File inputBam
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command {
         samtools sort ${inputBam} -o sorted.bam
@@ -136,9 +141,9 @@ task SortBam{
         File sortedBam = 'sorted.bam'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

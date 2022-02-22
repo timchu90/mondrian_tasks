@@ -7,6 +7,8 @@ task ExtractSplitReads{
         String outputBam
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command {
         samtools view -h ~{inputBam} | lumpy_extractSplitReads_BwaMem -i stdin | samtools view -Sb - > ~{outputBam}
@@ -15,9 +17,9 @@ task ExtractSplitReads{
         File bamFile = outputBam
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -32,9 +34,11 @@ task LumpyExpress{
         File tumourDiscBam
         File normal_bam
         File tumour_bam
+        String filename_prefix
         String? singularity_image
         String? docker_image
-        String filename_prefix
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command{
         lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o ~{filename_prefix}_lumpy.vcf
@@ -43,9 +47,9 @@ task LumpyExpress{
         File lumpy_vcf = '~{filename_prefix}_lumpy.vcf'
     }
     runtime{
-        memory: "40 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "240:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

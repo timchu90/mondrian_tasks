@@ -13,7 +13,8 @@ task RunMuseq{
         Int cores
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command<<<
         mkdir pythonegg
@@ -44,6 +45,8 @@ task FixMuseqVcf{
         File vcf_file
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<

@@ -8,7 +8,8 @@ task MergePdf{
         String filename_prefix
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         pdf_utils merge_pdfs --infiles ~{sep=" "infiles} --outfile ~{filename_prefix}.pdf
@@ -17,9 +18,9 @@ task MergePdf{
         File merged = '~{filename_prefix}.pdf'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

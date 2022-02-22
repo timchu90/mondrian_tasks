@@ -13,7 +13,8 @@ task RunReadCounter{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command<<<
         hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
@@ -24,9 +25,9 @@ task RunReadCounter{
         Array[File] wigs = glob('output*/*.wig')
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "96:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -41,7 +42,8 @@ task CorrectReadCount{
         String map_cutoff
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
@@ -52,9 +54,9 @@ task CorrectReadCount{
         File wig = 'output.wig'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -66,7 +68,8 @@ task RunHmmcopy{
         File corrected_wig
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     hmmcopy_utils run_hmmcopy \
@@ -90,9 +93,9 @@ task RunHmmcopy{
         File tarball = 'hmmcopy_data.tar.gz'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -113,7 +116,8 @@ task PlotHmmcopy{
         File reference_fai
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
@@ -125,9 +129,9 @@ task PlotHmmcopy{
         File bias_pdf = 'bias.pdf'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -144,7 +148,8 @@ task PlotHeatmap{
         String filename_prefix = "heatmap"
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         hmmcopy_utils heatmap --reads ~{reads} --metrics ~{metrics} \
@@ -154,9 +159,9 @@ task PlotHeatmap{
         File heatmap_pdf = '~{filename_prefix}.pdf'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -167,10 +172,11 @@ task AddMappability{
     input{
         File infile
         File infile_yaml
+        String filename_prefix
         String? singularity_image
         String? docker_image
-
-        String filename_prefix
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     hmmcopy_utils add_mappability --infile ~{infile} --outfile ~{filename_prefix}.csv.gz
@@ -180,9 +186,9 @@ task AddMappability{
         File outfile_yaml = '~{filename_prefix}.csv.gz.yaml'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -197,7 +203,8 @@ task CellCycleClassifier{
         File alignment_metrics
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     cell_cycle_classifier train-classify ~{hmmcopy_reads} ~{hmmcopy_metrics} ~{alignment_metrics} output.csv.gz
@@ -214,9 +221,9 @@ task CellCycleClassifier{
         File outfile_yaml = 'rewrite.csv.gz.yaml'
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -230,10 +237,11 @@ task AddQuality{
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
+        String filename_prefix
         String? singularity_image
         String? docker_image
-
-        String filename_prefix
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output ~{filename_prefix}.csv.gz --tempdir temp
@@ -243,9 +251,9 @@ task AddQuality{
         File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -257,10 +265,12 @@ task CreateSegmentsTar{
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
+        String filename_prefix
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
 
-        String filename_prefix
     }
     command<<<
     hmmcopy_utils create_segs_tar --segs_png ~{sep = " " segments_plot} \
@@ -272,9 +282,9 @@ task CreateSegmentsTar{
         File segments_fail = "~{filename_prefix}_fail.tar.gz"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -292,7 +302,8 @@ task GenerateHtmlReport{
         String filename_prefix
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     hmmcopy_utils generate_html_report \
@@ -305,9 +316,9 @@ task GenerateHtmlReport{
         File html_report = "~{filename_prefix}_report.html"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -323,7 +334,8 @@ task AddClusteringOrder{
         String filename_prefix = "added_clustering_order"
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
     hmmcopy_utils add_clustering_order \
@@ -335,9 +347,9 @@ task AddClusteringOrder{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -360,7 +372,8 @@ task HmmcopyMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         hmmcopy_utils generate_metadata \
@@ -378,9 +391,9 @@ task HmmcopyMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

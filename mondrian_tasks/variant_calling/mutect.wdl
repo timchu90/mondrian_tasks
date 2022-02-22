@@ -5,6 +5,8 @@ task GetSampleId{
         File input_bam
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -39,6 +41,8 @@ task RunMutect{
         String normal_sample_id
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -76,6 +80,8 @@ task FilterMutect{
         File vcf_file
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<

@@ -3,10 +3,11 @@ version 1.0
 task TarFiles{
     input{
         Array[File] inputs
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command{
         mkdir ~{filename_prefix}
@@ -19,9 +20,9 @@ task TarFiles{
         File tar_output = '~{filename_prefix}.tar.gz'
     }
     runtime{
-        memory: "12 GB"
+        memory: '~{memory_gb} GB'
         cpu: 1
-        walltime: "48:00"
+        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

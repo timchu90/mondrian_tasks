@@ -6,6 +6,10 @@ task GetGenomeSize{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -34,6 +38,10 @@ task GenerateChromDepth{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -61,6 +69,10 @@ task MergeChromDepths{
         Array[File] inputs
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -114,7 +126,8 @@ task RunStrelka{
         Int cores
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command<<<
         for interval in ~{sep=" "intervals}

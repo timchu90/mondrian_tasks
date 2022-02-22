@@ -4,10 +4,11 @@ version 1.0
 task MarkDuplicates{
     input{
         File input_bam
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command{
         picard -Xmx12G -Xms12G MarkDuplicates \
@@ -28,9 +29,9 @@ task MarkDuplicates{
         File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -42,10 +43,11 @@ task CollectGcBiasMetrics{
         File input_bam
         File reference
         File reference_fai
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command<<<
         picard -Xmx12G -Xms12G CollectGcBiasMetrics \
@@ -63,9 +65,9 @@ task CollectGcBiasMetrics{
         File chart_pdf="~{filename_prefix}_gcbias_chart.pdf"
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -77,10 +79,11 @@ task CollectWgsMetrics{
         File input_bam
         File reference
         File reference_fai
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command<<<
         picard -Xmx12G -Xms12G CollectWgsMetrics \
@@ -98,9 +101,9 @@ task CollectWgsMetrics{
         File metrics_txt="~{filename_prefix}_wgsmetrics.txt"
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -111,10 +114,11 @@ task CollectWgsMetrics{
 task CollectInsertSizeMetrics{
     input{
         File input_bam
+        String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = "output"
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command<<<
         picard -Xmx12G -Xms12G CollectInsertSizeMetrics \
@@ -141,9 +145,9 @@ task CollectInsertSizeMetrics{
         File histogram_pdf='~{filename_prefix}_insert_histogram.pdf'
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -155,7 +159,8 @@ task SortSam{
         File input_bam
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command<<<
         picard -Xmx12G -Xms12G SortSam \
@@ -170,9 +175,9 @@ task SortSam{
         File output_bam="markdups.bam"
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -183,7 +188,8 @@ task MergeSamFiles{
         Array[File] input_bams
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 18
+        Int? walltime_hours = 48
     }
     command<<<
         picard -Xmx12G -Xms12G MergeSamFiles \
@@ -198,9 +204,9 @@ task MergeSamFiles{
         File output_bam="merged.bam"
     }
     runtime{
-        memory: "18 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

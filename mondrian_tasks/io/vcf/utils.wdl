@@ -10,7 +10,8 @@ task VcfReheaderId{
         String vcf_normal_id
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         variant_utils vcf_reheader_id \
@@ -25,9 +26,9 @@ task VcfReheaderId{
         File output_file = "output.vcf.gz"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

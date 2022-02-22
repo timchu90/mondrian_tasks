@@ -9,7 +9,8 @@ task RunVcf2Maf{
         String normal_id
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command<<<
         if file --mime-type ~{vcf_file} | grep -q gzip$; then
@@ -29,9 +30,9 @@ task RunVcf2Maf{
         File maf = 'annotated.maf'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

@@ -7,6 +7,8 @@ task BreakpointMetadata{
         Array[String] samples
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 7
+        Int? walltime_hours = 8
     }
     command<<<
         breakpoint_utils generate_metadata \
@@ -19,9 +21,9 @@ task BreakpointMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

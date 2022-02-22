@@ -13,9 +13,11 @@ task RunGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
+        String filename_prefix
         String? singularity_image
         String? docker_image
-        String filename_prefix
+        Int? memory_gb = 12
+        Int? walltime_hours = 120
     }
     command{
         gridss.sh \
@@ -32,9 +34,9 @@ task RunGridss{
         File output_vcf = "~{filename_prefix}_gridss.vcf.gz"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: num_threads
-        walltime: "240:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

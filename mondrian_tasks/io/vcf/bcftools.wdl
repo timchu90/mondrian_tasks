@@ -7,7 +7,8 @@ task ConcatVcf{
         Array[File] tbi_files
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         bcftools concat -a -O z -o merged.vcf.gz ~{sep=" " vcf_files}
@@ -22,9 +23,9 @@ task ConcatVcf{
         File merged_vcf_tbi = 'merged_sorted.vcf.gz.tbi'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -35,10 +36,11 @@ task MergeVcf{
         Array[File] vcf_files
         Array[File] csi_files
         Array[File] tbi_files
+        String filename_prefix = 'merged_sorted'
         String? singularity_image
         String? docker_image
-
-        String filename_prefix = 'merged_sorted'
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         all_vcfs_string=~{sep=" " vcf_files}
@@ -60,9 +62,9 @@ task MergeVcf{
         File merged_vcf_tbi = '~{filename_prefix}.vcf.gz.tbi'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -74,7 +76,8 @@ task FilterVcf{
         File vcf_file
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         bcftools view -O z -f .,PASS -o filtered.vcf.gz ~{vcf_file}
@@ -87,9 +90,9 @@ task FilterVcf{
         File filtered_vcf_tbi = 'filtered.vcf.gz.tbi'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -102,7 +105,8 @@ task FinalizeVcf{
         String filename_prefix
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         vcf-sort ~{vcf_file} > vcf_uncompressed.vcf
@@ -116,9 +120,9 @@ task FinalizeVcf{
         File vcf_tbi = '~{filename_prefix}.vcf.gz.tbi'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

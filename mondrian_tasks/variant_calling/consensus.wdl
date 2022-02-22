@@ -14,6 +14,8 @@ task RunConsensusCalling{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
             variant_utils consensus --museq_vcf ~{museq_vcf} \

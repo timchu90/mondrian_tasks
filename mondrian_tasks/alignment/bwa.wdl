@@ -18,6 +18,8 @@ task BwaMemPaired{
         String flowcell_id
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 24
     }
     command {
         alignment_utils bwa_align --metadata_yaml ~{metadata_yaml} \
@@ -29,9 +31,9 @@ task BwaMemPaired{
         File bam = "aligned.bam"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

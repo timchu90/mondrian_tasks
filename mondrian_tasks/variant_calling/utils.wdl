@@ -7,6 +7,8 @@ task VariantMetadata{
         Array[String] samples
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         variant_utils generate_metadata \
