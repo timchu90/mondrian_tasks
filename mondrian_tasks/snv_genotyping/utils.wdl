@@ -7,10 +7,10 @@ task Genotyper{
         File vcf_file
         File vcf_file_idx
         Array[String] intervals
-        Int num_threads
         String filename_prefix = "snv_genotyping"
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 24
     }
