@@ -34,12 +34,12 @@ task GenerateChromDepth{
         File normal_bai
         File reference
         File reference_fai
-        Int cores
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 8
 
@@ -49,7 +49,7 @@ task GenerateChromDepth{
             do
                 echo "GetChromDepth --align-file ~{normal_bam} --chrom ${interval} --output-file ${interval}.chrom_depth.txt" >> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
     output{
         Array[File] chrom_depths = glob("*.chrom_depth.txt")
@@ -123,9 +123,9 @@ task RunStrelka{
         Int sindel_quality_lower_bound=40
         Float ssnv_contam_tolerance=0.15
         Float indel_contam_tolerance=0.15
-        Int cores
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 96
     }
@@ -157,7 +157,7 @@ task RunStrelka{
                 --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
             done
 
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
 
     >>>
     output{
@@ -167,7 +167,7 @@ task RunStrelka{
     }
     runtime{
         memory: "12 GB"
-        cpu: "~{cores}"
+        cpu: "~{num_threads}"
         walltime: "96:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

@@ -17,10 +17,10 @@ task RunDestruct{
         File reference_fa_rev_2_ebwt
         File dgv
         File repeats_satellite_regions
-        String num_threads
         String filename_prefix
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 120
     }

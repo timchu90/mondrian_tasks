@@ -7,7 +7,6 @@ task RunSvaba{
         File normal_bai
         File tumour_bam
         File tumour_bai
-        Int num_threads
         File reference
         File reference_fa_fai
         File reference_fa_amb
@@ -18,6 +17,7 @@ task RunSvaba{
         String filename_prefix
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 120
     }

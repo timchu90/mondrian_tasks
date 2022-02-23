@@ -142,16 +142,16 @@ task BamMerge{
         Array[String] cell_ids
         File metrics
         File metrics_yaml
-        Int ncores
         String filename_prefix
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 96
     }
     command <<<
         alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
-        --tempdir temp --ncores ~{ncores} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
+        --tempdir temp --ncores ~{num_threads} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
         --control_outfile ~{filename_prefix}_control.bam \
         --pass_outfile ~{filename_prefix}.bam
     >>>
@@ -165,7 +165,7 @@ task BamMerge{
     }
     runtime{
         memory: '~{memory_gb} GB'
-        cpu: ncores
+        cpu: '~{num_threads}'
         walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

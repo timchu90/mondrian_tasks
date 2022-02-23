@@ -11,9 +11,9 @@ task GetPileup{
         File variants_for_contamination
         File variants_for_contamination_idx
         Array[String] intervals
-        Int cores
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 96
     }
@@ -28,14 +28,14 @@ task GetPileup{
                 -L ~{variants_for_contamination} \
                 -O outdir/${interval}_pileups.table">> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
     output{
         Array[File] pileups = glob("outdir/*_pileups.table")
     }
     runtime{
         memory: "~{memory_gb} GB"
-        cpu: "~{cores}"
+        cpu: "~{num_threads}"
         walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
@@ -56,9 +56,9 @@ task RunMutect{
         File panel_of_normals
         File panel_of_normals_idx
         Array[String] intervals
-        Int cores
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 96
     }
@@ -76,7 +76,7 @@ task RunMutect{
                 -pon ~{panel_of_normals} \
                 -R ~{reference} -O raw_data/${interval}.vcf.gz  --intervals ${interval} ">> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
     output{
         Array[File] vcf_files = glob("raw_data/*.vcf.gz")
@@ -85,7 +85,7 @@ task RunMutect{
     }
     runtime{
         memory: "~{memory_gb} GB"
-        cpu: "~{cores}"
+        cpu: "~{num_threads}"
         walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

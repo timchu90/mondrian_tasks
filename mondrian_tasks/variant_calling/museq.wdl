@@ -10,9 +10,9 @@ task RunMuseq{
         File reference
         File reference_fai
         Array[String] intervals
-        Int cores
         String? singularity_image
         String? docker_image
+        Int? num_threads = 8
         Int? memory_gb = 12
         Int? walltime_hours = 96
     }
@@ -24,7 +24,7 @@ task RunMuseq{
                 echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
                 --out ${interval}.vcf --log ${interval}.log -v -i ${interval} ">> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
 
     output{
@@ -32,7 +32,7 @@ task RunMuseq{
     }
     runtime{
         memory: "12 GB"
-        cpu: "~{cores}"
+        cpu: "~{num_threads}"
         walltime: "96:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
