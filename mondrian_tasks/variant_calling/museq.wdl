@@ -10,10 +10,11 @@ task RunMuseq{
         File reference
         File reference_fai
         Array[String] intervals
-        Int cores
         String? singularity_image
         String? docker_image
-
+        Int? num_threads = 8
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command<<<
         mkdir pythonegg
@@ -23,15 +24,15 @@ task RunMuseq{
                 echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
                 --out ${interval}.vcf --log ${interval}.log -v -i ${interval} ">> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
 
     output{
         Array[File] vcf_files = glob("*.vcf")
     }
     runtime{
-        memory: 12 * cores + "GB"
-        cpu: cores
+        memory: 12 * num_threads + "GB"
+        cpu: num_threads
         walltime: "96:00"
         disks: 'local-disk 500 HDD'
         preemptible: 0
@@ -46,6 +47,8 @@ task FixMuseqVcf{
         File vcf_file
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<

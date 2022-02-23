@@ -17,10 +17,12 @@ task RunDestruct{
         File reference_fa_rev_2_ebwt
         File dgv
         File repeats_satellite_regions
-        String num_threads
+        String filename_prefix
         String? singularity_image
         String? docker_image
-        String filename_prefix
+        Int? num_threads = 8
+        Int? memory_gb = 12
+        Int? walltime_hours = 120
     }
     command<<<
         echo "genome_fasta = '~{reference}'; genome_fai = '~{reference_fai}'; gtf_filename = '~{reference_gtf}'" > config.py
@@ -38,9 +40,9 @@ task RunDestruct{
         File read_table = "~{filename_prefix}_breakpoint_read_table.csv"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: num_threads
-        walltime: "240:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

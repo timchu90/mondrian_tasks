@@ -6,6 +6,10 @@ task GetGenomeSize{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -30,10 +34,14 @@ task GenerateChromDepth{
         File normal_bai
         File reference
         File reference_fai
-        Int cores
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? num_threads = 8
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -41,7 +49,7 @@ task GenerateChromDepth{
             do
                 echo "GetChromDepth --align-file ~{normal_bam} --chrom ${interval} --output-file ${interval}.chrom_depth.txt" >> commands.txt
             done
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
     >>>
     output{
         Array[File] chrom_depths = glob("*.chrom_depth.txt")
@@ -62,6 +70,10 @@ task MergeChromDepths{
         Array[File] inputs
         String? singularity_image
         String? docker_image
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
 
     }
     command<<<
@@ -112,10 +124,11 @@ task RunStrelka{
         Int sindel_quality_lower_bound=40
         Float ssnv_contam_tolerance=0.15
         Float indel_contam_tolerance=0.15
-        Int cores
         String? singularity_image
         String? docker_image
-
+        Int? num_threads = 8
+        Int? memory_gb = 12
+        Int? walltime_hours = 96
     }
     command<<<
         for interval in ~{sep=" "intervals}
@@ -145,7 +158,7 @@ task RunStrelka{
                 --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
             done
 
-        parallel --jobs ~{cores} < commands.txt
+        parallel --jobs ~{num_threads} < commands.txt
 
     >>>
     output{
@@ -154,8 +167,8 @@ task RunStrelka{
         Array[File] stats = glob("*stats.txt")
     }
     runtime{
-        memory: 12 * cores + "GB"
-        cpu: cores
+        memory: 12 * num_threads + "GB"
+        cpu: num_threads
         walltime: "96:00"
         disks: 'local-disk 500 HDD'
         preemptible: 0

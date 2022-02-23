@@ -8,9 +8,11 @@ task Genotyper{
         File vcf_file_idx
         Array[String] intervals
         Int num_threads
+        String filename_prefix = "snv_genotyping"
         String? singularity_image
         String? docker_image
-        String filename_prefix = "snv_genotyping"
+        Int? memory_gb = 12
+        Int? walltime_hours = 24
     }
     command<<<
         for interval in ~{sep=" "intervals}
@@ -28,9 +30,9 @@ task Genotyper{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "24:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -46,6 +48,8 @@ task SnvGenotypingMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command<<<
         snv_genotyping_utils generate_metadata \
@@ -58,9 +62,9 @@ task SnvGenotypingMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -73,6 +77,8 @@ task GenerateCellBarcodes{
         File baifile
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command<<<
         snv_genotyping_utils generate_cell_barcodes --bam ~{bamfile} --output barcodes.txt
@@ -81,9 +87,9 @@ task GenerateCellBarcodes{
         File cell_barcodes = "barcodes.txt"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -99,6 +105,8 @@ task RunVartrix{
         File cell_barcodes
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 48
     }
     command<<<
         vartrix_linux --bam ~{bamfile} \
@@ -120,9 +128,9 @@ task RunVartrix{
         File alt_counts = "out_snv_matrix.mtx"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -137,6 +145,8 @@ task ParseVartrix{
         File alt_counts
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         snv_genotyping_utils parse_vartrix \
@@ -151,9 +161,9 @@ task ParseVartrix{
         File outfile_yaml = "vartrix_parsed.csv.gz.yaml"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "48:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

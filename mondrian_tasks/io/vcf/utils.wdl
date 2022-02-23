@@ -11,6 +11,8 @@ task VcfReheaderId{
         Int diskSize = ceil(2*(size(normal_bam,"GB") + size(tumor_bam, "GB")))
         String? singularity_image
         String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
     }
     command<<<
         variant_utils vcf_reheader_id \
@@ -25,10 +27,10 @@ task VcfReheaderId{
         File output_file = "output.vcf.gz"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
         disks: "local-disk " + diskSize + " HDD"
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

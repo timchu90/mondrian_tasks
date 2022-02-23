@@ -7,7 +7,8 @@ task RewriteCsv{
         String dtypes
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         csverve_utils rewrite_csv --infile ~{infile} --outfile outfile.csv.gz --dtypes ~{dtypes}
@@ -17,9 +18,9 @@ task RewriteCsv{
         File outfile_yaml = 'outfile.csv.gz.yaml'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -33,7 +34,8 @@ task ConcatenateCsv {
         String filename_prefix = 'output'
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command {
         csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz --write_header
@@ -44,9 +46,9 @@ task ConcatenateCsv {
         File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -61,7 +63,8 @@ task MergeCsv{
         String how
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command<<<
         csverve merge --in_f ~{sep=" --in_f " inputfiles} --out_f merged.csv.gz --on ~{on} --how ~{how} --write_header
@@ -71,9 +74,9 @@ task MergeCsv{
         File outfile_yaml = 'merged.csv.gz.yaml'
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -86,7 +89,8 @@ task FinalizeCsv {
         Array[File] inputfile
         String? singularity_image
         String? docker_image
-
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
     }
     command {
         variant_utils concat_csv  --inputs ~{sep=" " inputfile} --output concat.csv --write_header
@@ -96,9 +100,9 @@ task FinalizeCsv {
         File outfile = "concat.csv"
     }
     runtime{
-        memory: "8 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "6:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
