@@ -81,6 +81,7 @@ task AlignPostprocessAllLanes{
         walltime: "24:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
+        disks: "local-disk 50 HDD"
     }
 }
 
@@ -247,6 +248,7 @@ task AlignmentMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
+        Int diskSize = ceil(2*(size(bam, "GB") + size(contaminated_bam, "GB") + size(control_bam, "GB")))
 
     }
     command<<<
@@ -268,5 +270,6 @@ task AlignmentMetadata{
         walltime: "48:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
+        disks: "local-disk " + diskSize + " HDD"
     }
 }
