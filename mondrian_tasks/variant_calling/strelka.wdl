@@ -19,9 +19,9 @@ task GetGenomeSize{
         String genome_size = read_string('genome_size.txt')
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -55,9 +55,9 @@ task GenerateChromDepth{
         Array[File] chrom_depths = glob("*.chrom_depth.txt")
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -82,9 +82,9 @@ task MergeChromDepths{
         File merged = "output.txt"
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -166,9 +166,9 @@ task RunStrelka{
         Array[File] stats = glob("*stats.txt")
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: "~{num_threads}"
-        walltime: "96:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

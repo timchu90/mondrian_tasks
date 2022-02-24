@@ -31,9 +31,9 @@ task RunMuseq{
         Array[File] vcf_files = glob("*.vcf")
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: "~{num_threads}"
-        walltime: "96:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -61,9 +61,9 @@ task FixMuseqVcf{
         File output_tbi = 'output.vcf.gz.tbi'
     }
     runtime{
-        memory: "12 GB"
+        memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "8:00"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
