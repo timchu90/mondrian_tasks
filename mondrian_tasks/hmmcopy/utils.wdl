@@ -17,17 +17,12 @@ task RunReadCounter{
         Int? walltime_hours = 96
     }
     command<<<
-        set -e
-        hmmcopy_utils readcounter --infile ~{bamfile} --outdir temp_output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
-        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir temp_output_control -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
-        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir temp_output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
-        mkdir all_wigs
-        mv temp_output/* all_wigs
-        mv temp_output_control/* all_wigs
-        mv temp_output_contaminated/* all_wigs
+        hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{control_bamfile} --outdir output_control -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
+        hmmcopy_utils readcounter --infile ~{contaminated_bamfile} --outdir output_contaminated -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
     >>>
     output{
-        Array[File] wigs = glob('all_wigs/*.wig')
+        Array[File] wigs = glob('output*/*.wig')
     }
     runtime{
         memory: "~{memory_gb} GB"
