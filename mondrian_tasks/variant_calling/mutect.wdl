@@ -187,7 +187,7 @@ task CalculateContamination {
 
     command {
         set -e
-        gatk --java-options CalculateContamination \
+        gatk CalculateContamination \
         -I ~{tumour_pileups}  -matched  ~{normal_pileups} \
         -O contamination.table --tumor-segmentation segments.table
     }
