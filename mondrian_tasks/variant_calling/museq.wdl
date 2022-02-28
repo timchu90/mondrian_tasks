@@ -70,3 +70,27 @@ task FixMuseqVcf{
 }
 
 
+task VariantBam{
+    input{
+        File bamfile
+        Int max_coverage=10000
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
+    }
+    command<<<
+        variant ~{bamfile} -m ~{max_coverage} -v -b -o output.bam
+    >>>
+    output{
+        File output_bam = "output.bam"
+        File output_bai = "output.bai"
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
