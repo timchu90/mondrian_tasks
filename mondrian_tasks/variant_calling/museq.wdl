@@ -74,17 +74,36 @@ task VariantBam{
     input{
         File bamfile
         Int max_coverage=10000
+        Array[String] chromosomes
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
         Int? walltime_hours = 8
+        Int? num_threads = 8
     }
     command<<<
-        variant ~{bamfile} -m ~{max_coverage} -v -b -o output.bam
+        mkdir variant_bam_outputs
+        for interval in ~{sep=" "chromosomes}
+            do
+                echo "variant ~{bamfile} -m ~{max_coverage} -g ${interval} -v -b -o variant_bam_outputs/${interval}.bam" >> commands.txt
+            done
+        parallel --jobs ~{num_threads} < commands.txt
+
+        num_files=`ls variant_bam_outputs/*bam |wc -l`
+
+        echo $num_files
+
+        if [[ $num_files -eq 1 ]]
+        then
+            mv variant_bam_outputs/*bam merged.bam
+        else
+            sambamba merge -t ~{num_threads} merged.bam variant_bam_outputs/*bam
+        fi
+        samtools index merged.bam
     >>>
     output{
-        File output_bam = "output.bam"
-        File output_bai = "output.bai"
+        File output_bam = "merged.bam"
+        File output_bai = "merged.bam.bai"
     }
     runtime{
         memory: "~{memory_gb} GB"
