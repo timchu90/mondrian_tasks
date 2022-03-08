@@ -73,8 +73,9 @@ task FixMuseqVcf{
 task VariantBam{
     input{
         File bamfile
+        File baifile
         Int max_coverage=10000
-        Array[String] chromosomes
+        Array[String] intervals
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
@@ -83,9 +84,9 @@ task VariantBam{
     }
     command<<<
         mkdir variant_bam_outputs
-        for interval in ~{sep=" "chromosomes}
+        for interval in ~{sep=" "intervals}
             do
-                echo "variant ~{bamfile} -m ~{max_coverage} -g ${interval} -v -b -o variant_bam_outputs/${interval}.bam" >> commands.txt
+                echo "variant ~{bamfile} -m ~{max_coverage} -k ${interval} -v -b -o variant_bam_outputs/${interval}.bam" >> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
 
