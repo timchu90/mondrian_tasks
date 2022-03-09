@@ -94,11 +94,14 @@ task VariantBam{
 
         echo $num_files
 
+        num_threads_merge=$((~{num_threads} / 2))
+        num_threads_merge=$(($num_threads_merge>0 ? $num_threads_merge : 1))
+
         if [[ $num_files -eq 1 ]]
         then
             mv variant_bam_outputs/*bam merged.bam
         else
-            sambamba merge -t ~{num_threads} merged.bam variant_bam_outputs/*bam
+            sambamba merge -t $num_threads_merge merged.bam variant_bam_outputs/*bam
         fi
         samtools index merged.bam
     >>>
