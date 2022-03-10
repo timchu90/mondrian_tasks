@@ -55,6 +55,8 @@ task RunMutect{
         File reference_dict
         File panel_of_normals
         File panel_of_normals_idx
+        File gnomad
+        File gnomad_idx
         Array[String] intervals
         String? singularity_image
         String? docker_image
@@ -74,6 +76,8 @@ task RunMutect{
                 -I ~{normal_bam} -normal `cat normal_name.txt` \
                 -I ~{tumour_bam}  -tumor `cat tumour_name.txt` \
                 -pon ~{panel_of_normals} \
+                --germline-resource ~{gnomad} \
+                --f1r2-tar-gz raw_data/${interval}_f1r2.tar.gz \
                 -R ~{reference} -O raw_data/${interval}.vcf.gz  --intervals ${interval} ">> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
@@ -82,6 +86,7 @@ task RunMutect{
         Array[File] vcf_files = glob("raw_data/*.vcf.gz")
         Array[File] vcf_files_idx = glob("raw_data/*.vcf.gz.tbi")
         Array[File] stats_files = glob("raw_data/*.vcf.gz.stats")
+        Array[File] f1r2 = glob("raw_data/*_f1r2.tar.gz")
     }
     runtime{
         memory: "~{memory_gb} GB"
@@ -216,6 +221,7 @@ task Filter {
       File mutect_stats
       File contamination_table
       File maf_segments
+      File artifact_priors_tar_gz
       String? singularity_image
       String? docker_image
       Int? memory_gb = 8
@@ -227,6 +233,7 @@ task Filter {
             -R ~{reference} \
             -O filtered.vcf.gz \
             -stats ~{mutect_stats} \
+            --ob-priors ~{artifact_priors_tar_gz} \
             --contamination-table ~{contamination_table} \
             --tumor-segmentation ~{maf_segments} \
             --filtering-stats filtering.stats
@@ -246,7 +253,66 @@ task Filter {
 }
 
 
+task FilterAlignmentArtifacts {
+    input {
+      File ref_fasta
+      File ref_fai
+      File ref_dict
+      File realignment_index_bundle
+      File input_vcf
+      File input_vcf_tbi
+      File tumour_bam
+      File tumour_bam_index
+      String? singularity_image
+      String? docker_image
+      Int? memory_gb = 16
+      Int? walltime_hours = 24
+    }
+    command {
+        set -e
+        gatk FilterAlignmentArtifacts \
+            -R ~{ref_fasta} \
+            -V ~{input_vcf} \
+            -I ~{tumour_bam} \
+            --bwa-mem-index-image ~{realignment_index_bundle} \
+            -O output.vcf.gz
+    }
+    output {
+        File filtered_vcf = "output.vcf.gz"
+        File filtered_vcf_idx = "output.vcf.gz.tbi"
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
 
+task LearnReadOrientationModel {
+    input {
+      Array[File] f1r2_tar_gz
+      String? singularity_image
+      String? docker_image
+      Int? memory_gb = 16
+      Int? walltime_hours = 24
+    }
 
-
-
+    command {
+        set -e
+        gatk LearnReadOrientationModel \
+            -I ~{sep=" -I " f1r2_tar_gz} \
+            -O "artifact-priors.tar.gz"
+    }
+    output {
+        File artifact_prior_table = "artifact-priors.tar.gz"
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
