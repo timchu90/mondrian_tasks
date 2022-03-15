@@ -298,7 +298,6 @@ task GenerateHtmlReport{
         File metrics_yaml
         File gc_metrics
         File gc_metrics_yaml
-        File reference_gc
         String filename_prefix
         String? singularity_image
         String? docker_image
@@ -308,7 +307,6 @@ task GenerateHtmlReport{
     command<<<
     hmmcopy_utils generate_html_report \
      --tempdir temp --html ~{filename_prefix}_report.html \
-     --reference_gc ~{reference_gc} \
      --metrics ~{metrics} \
      --gc_metrics ~{gc_metrics}
     >>>

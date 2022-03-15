@@ -31,6 +31,7 @@ task ConcatenateCsv {
     input {
         Array[File] inputfile
         Array[File] inputyaml
+        Boolean drop_duplicates = false
         String filename_prefix = 'output'
         String? singularity_image
         String? docker_image
@@ -38,8 +39,8 @@ task ConcatenateCsv {
         Int? walltime_hours = 8
     }
     command {
-        csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz --write_header
-
+        csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz --write_header \
+        ~{true='--drop_duplicates' false='' drop_duplicates}
     }
     output {
         File outfile = "~{filename_prefix}.csv.gz"
