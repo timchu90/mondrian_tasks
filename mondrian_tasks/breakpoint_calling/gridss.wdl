@@ -26,7 +26,7 @@ task RunGridss{
         --output ~{filename_prefix}_gridss.vcf.gz \
         --threads ~{num_threads} \
         --workingdir workingdir \
-        --jvmheap 30g \
+        --jvmheap 10g \
         --steps All \
         --labels tumour,normal ~{tumour_bam} ~{normal_bam}
     }
