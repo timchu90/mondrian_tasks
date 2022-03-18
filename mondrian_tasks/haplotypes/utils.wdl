@@ -39,11 +39,15 @@ task ExtractSeqData{
             samtools index ~{bam}
         fi
 
+        cellid=$(basename ~{bam})
+        cellid="${cellid%.*}"
+
         haplotype_utils extract_seqdata --bam ~{bam} \
         --snp_positions ~{snp_positions} \
         --output output.h5 \
         --tempdir seqdata_temp \
-        --chromosomes ~{sep=" "chromosomes}
+        --chromosomes ~{sep=" "chromosomes} \
+        --cell_id $cellid
     >>>
     output{
         File seqdata = "output.h5"
