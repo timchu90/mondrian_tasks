@@ -108,3 +108,37 @@ task FinalizeCsv {
         singularity: '~{singularity_image}'
     }
 }
+
+task AnnotateCsv {
+    input {
+        File inputfile
+        File inputyaml
+        String col_name
+        String col_val
+        String col_dtype
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 8
+        Int? walltime_hours = 8
+    }
+    command {
+        csverve annotate \
+         --in_f ~{inputfile} \
+         --out_f annotated.csv.gz \
+         --col_name ~{col_name} \
+         --col_val ~{col_val} \
+         --col_dtype ~{col_dtype} \
+         --write_header
+    }
+    output {
+        File outfile = "annotated.csv.gz"
+        File outfile_yaml = "annotated.csv.gz.yaml"
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
