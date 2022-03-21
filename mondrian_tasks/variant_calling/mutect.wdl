@@ -57,7 +57,7 @@ task RunMutect{
         File panel_of_normals_idx
         File gnomad
         File gnomad_idx
-        Array[String] intervals
+        String interval
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
@@ -65,12 +65,15 @@ task RunMutect{
         Int? walltime_hours = 96
     }
     command<<<
-        mkdir raw_data
 
         gatk GetSampleName -R ~{reference} -I ~{tumour_bam} -O tumour_name.txt
         gatk GetSampleName -R ~{reference} -I ~{normal_bam} -O normal_name.txt
 
-        for interval in ~{sep=" "intervals}
+        mkdir raw_data
+        intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+        echo $intervals
+
+        for interval in $intervals
             do
                 echo "gatk Mutect2 \
                 -I ~{normal_bam} -normal `cat normal_name.txt` \
@@ -81,11 +84,23 @@ task RunMutect{
                 -R ~{reference} -O raw_data/${interval}.vcf.gz  --intervals ${interval} ">> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
+
+        variant_utils merge_vcf_files --inputs raw_data/*vcf.gz --output merged.vcf
+        variant_utils fix_museq_vcf --input merged.vcf --output merged.fixed.vcf
+        vcf-sort merged.fixed.vcf > merged.sorted.fixed.vcf
+        bgzip merged.sorted.fixed.vcf -c > merged.sorted.fixed.vcf.gz
+        tabix -f -p vcf merged.sorted.fixed.vcf.gz
+
+        inputs=`ls raw_data/*stats | awk 'ORS=" -stats "' | head -c -8`
+        echo $inputs
+        gatk --java-options "-Xmx4G" MergeMutectStats \
+            -stats $inputs -O merged.stats
+
     >>>
     output{
-        Array[File] vcf_files = glob("raw_data/*.vcf.gz")
-        Array[File] vcf_files_idx = glob("raw_data/*.vcf.gz.tbi")
-        Array[File] stats_files = glob("raw_data/*.vcf.gz.stats")
+        File vcf_file = "merged.sorted.fixed.vcf.gz"
+        File vcf_file_idx = "merged.sorted.fixed.vcf.gz.tbi"
+        File stats_file = "merged.stats"
         Array[File] f1r2 = glob("raw_data/*_f1r2.tar.gz")
     }
     runtime{

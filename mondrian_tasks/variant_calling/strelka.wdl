@@ -97,7 +97,7 @@ task RunStrelka{
         File normal_bai
         File tumour_bam
         File tumour_bai
-        Array[String] intervals
+        String interval
         File reference
         File reference_fai
         String genome_size
@@ -130,7 +130,10 @@ task RunStrelka{
         Int? walltime_hours = 96
     }
     command<<<
-        for interval in ~{sep=" "intervals}
+        intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+        echo $intervals
+
+        for interval in $intervals
             do
                 echo "run_strelka ~{normal_bam} ~{tumour_bam} ${interval}.indels.vcf ${interval}.snv.vcf ${interval}.stats.txt ${interval} ~{reference} ~{genome_size} \
                 -max-indel-size 50 -min-qscore ~{min_qscore} -max-window-mismatch ~{sep=" " max_window_mismatch} \
@@ -156,13 +159,31 @@ task RunStrelka{
                 --strelka-chrom-depth-file ~{chrom_depth_file} \
                 --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
             done
+
         parallel --jobs ~{num_threads} < commands.txt
-        variant_utils merge_vcf_files --output merged.snv.vcf --input *.snv.vcf
-        variant_utils merge_vcf_files --output merged.indels.vcf --input *.indels.vcf
+
+        variant_utils merge_vcf_files --inputs *.snv.vcf --output merged_snv.vcf
+        variant_utils fix_museq_vcf --input merged_snv.vcf --output merged_snv.fixed.vcf
+        vcf-sort merged_snv.fixed.vcf > merged_snv.sorted.fixed.vcf
+        bgzip merged_snv.sorted.fixed.vcf -c > merged_snv.sorted.fixed.vcf.gz
+        bcftools index merged_snv.sorted.fixed.vcf.gz
+        tabix -f -p vcf merged_snv.sorted.fixed.vcf.gz
+
+        variant_utils merge_vcf_files --inputs *.indels.vcf --output merged_indels.vcf
+        variant_utils fix_museq_vcf --input merged_indels.vcf --output merged_indels.fixed.vcf
+        vcf-sort merged_indels.fixed.vcf > merged_indels.sorted.fixed.vcf
+        bgzip merged_indels.sorted.fixed.vcf -c > merged_indels.sorted.fixed.vcf.gz
+        bcftools index merged_indels.sorted.fixed.vcf.gz
+        tabix -f -p vcf merged_indels.sorted.fixed.vcf.gz
+
     >>>
     output{
-        File indels = "merged.indels.vcf"
-        File snvs = "merged.snv.vcf"
+        File indels = "merged_indels.sorted.fixed.vcf.gz"
+        File indels_csi = "merged_indels.sorted.fixed.vcf.gz.csi"
+        File indels_tbi = "merged_indels.sorted.fixed.vcf.gz.tbi"
+        File snv = "merged_snv.sorted.fixed.vcf.gz"
+        File snv_csi = "merged_snv.sorted.fixed.vcf.gz.csi"
+        File snv_tbi = "merged_snv.sorted.fixed.vcf.gz.tbi"
         Array[File] stats = glob("*stats.txt")
     }
     runtime{

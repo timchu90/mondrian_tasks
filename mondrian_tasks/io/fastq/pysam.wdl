@@ -4,13 +4,14 @@ task GenerateIntervals{
     input{
         File reference
         Array[String] chromosomes
+        Int interval_size = 1000000
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
         Int? walltime_hours = 48
     }
     command<<<
-        variant_utils generate_intervals --reference ~{reference} --chromosomes ~{sep=" "  chromosomes} > intervals.txt
+        variant_utils generate_intervals --reference ~{reference} --chromosomes ~{sep=" "  chromosomes} --size ~{interval_size} > intervals.txt
     >>>
     output{
         Array[String] intervals = read_lines('intervals.txt')
