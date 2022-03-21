@@ -156,13 +156,13 @@ task RunStrelka{
                 --strelka-chrom-depth-file ~{chrom_depth_file} \
                 --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
             done
-
         parallel --jobs ~{num_threads} < commands.txt
-
+        variant_utils merge_vcf_files --output merged.snv.vcf --input *.snv.vcf
+        variant_utils merge_vcf_files --output merged.indels.vcf --input *.indels.vcf
     >>>
     output{
-        Array[File] indels = glob("*.indels.vcf")
-        Array[File] snvs = glob("*.snv.vcf")
+        File indels = "merged.indels.vcf"
+        File snvs = "merged.snv.vcf"
         Array[File] stats = glob("*stats.txt")
     }
     runtime{

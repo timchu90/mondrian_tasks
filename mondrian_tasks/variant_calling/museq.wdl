@@ -17,18 +17,20 @@ task RunMuseq{
         Int? walltime_hours = 96
     }
     command<<<
+        mkdir museq_output
         mkdir pythonegg
         export PYTHON_EGG_CACHE=$PWD/pythonegg
         for interval in ~{sep=" "intervals}
             do
                 echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
-                --out ${interval}.vcf --log ${interval}.log -v -i ${interval} ">> commands.txt
+                --out museq_output/${interval}.vcf --log ${interval}.log -v -i ${interval} ">> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
+        variant_utils merge_vcf_files --output merged.vcf --input museq_output/*vcf
     >>>
 
     output{
-        Array[File] vcf_files = glob("*.vcf")
+        File vcf_file = "merged.vcf"
     }
     runtime{
         memory: "~{memory_gb} GB"
