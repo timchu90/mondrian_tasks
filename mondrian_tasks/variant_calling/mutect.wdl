@@ -10,7 +10,7 @@ task GetPileup{
         File reference_dict
         File variants_for_contamination
         File variants_for_contamination_idx
-        Array[String] intervals
+        String chromosome
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
@@ -19,16 +19,12 @@ task GetPileup{
     }
     command<<<
         mkdir outdir
-        for interval in ~{sep=" "intervals}
-            do
-                echo "gatk GetPileupSummaries \
-                -R ~{reference} -I ~{input_bam} \
-                --interval-set-rule INTERSECTION -L ${interval} \
-                -V ~{variants_for_contamination} \
-                -L ~{variants_for_contamination} \
-                -O outdir/${interval}_pileups.table">> commands.txt
-            done
-        parallel --jobs ~{num_threads} < commands.txt
+        gatk GetPileupSummaries \
+        -R ~{reference} -I ~{input_bam} \
+        --interval-set-rule INTERSECTION -L ${chromosome} \
+        -V ~{variants_for_contamination} \
+        -L ~{variants_for_contamination} \
+        -O outdir/${interval}_pileups.table
     >>>
     output{
         Array[File] pileups = glob("outdir/*_pileups.table")
