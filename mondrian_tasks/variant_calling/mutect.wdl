@@ -24,10 +24,10 @@ task GetPileup{
         --interval-set-rule INTERSECTION -L ${chromosome} \
         -V ~{variants_for_contamination} \
         -L ~{variants_for_contamination} \
-        -O outdir/${interval}_pileups.table
+        -O pileups.table
     >>>
     output{
-        Array[File] pileups = glob("outdir/*_pileups.table")
+        File pileups = "pileups.table"
     }
     runtime{
         memory: "~{memory_gb} GB"
