@@ -21,7 +21,7 @@ task GetPileup{
         mkdir outdir
         gatk GetPileupSummaries \
         -R ~{reference} -I ~{input_bam} \
-        --interval-set-rule INTERSECTION -L ${chromosome} \
+        --interval-set-rule INTERSECTION -L ~{chromosome} \
         -V ~{variants_for_contamination} \
         -L ~{variants_for_contamination} \
         -O pileups.table
