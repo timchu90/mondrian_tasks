@@ -18,42 +18,24 @@ task RunMuseq{
         Int? walltime_hours = 96
     }
     command<<<
-        mkdir tumour_variant_bam normal_variant_bam pythonegg museq_vcf museq_log
-        export PYTHON_EGG_CACHE=$PWD/pythonegg
-        intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
-        echo $intervals
-
+        mkdir pythonegg && export PYTHON_EGG_CACHE=$PWD/pythonegg
 
         if [[ ~{num_threads} -eq 1 ]]
         then
-            variant ~{normal_bam} -m ~{max_coverage} -k ~{interval} -v -b -o normal.bam
-            variant ~{tumour_bam} -m ~{max_coverage} -k ~{interval} -v -b -o tumour.bam
-            samtools index normal.bam
-            samtools index tumour.bam
+            museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
+            --out merged.vcf --log museq.log -v -i ~{interval}
         else
-            mkdir tumour_variant_bam normal_variant_bam
+            mkdir museq_vcf museq_log
+            intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
             for interval in $intervals
                 do
-                    echo "variant ~{normal_bam} -m ~{max_coverage} -k ${interval} -v -b -o normal_variant_bam/${interval}.bam" >> variant_commands.txt
-                    echo "variant ~{tumour_bam} -m ~{max_coverage} -k ${interval} -v -b -o tumour_variant_bam/${interval}.bam" >> variant_commands.txt
+                    echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
+                    --out museq_vcf/${interval}.vcf --log museq_log/${interval}.log -v -i ${interval} ">> museq_commands.txt
                 done
-            parallel --jobs ~{num_threads} < variant_commands.txt
-
-            sambamba merge -t ~{num_threads} normal.bam normal_variant_bam/*bam
-            sambamba merge -t ~{num_threads} tumour.bam tumour_variant_bam/*bam
-            samtools index normal.bam
-            samtools index tumour.bam
+            parallel --jobs ~{num_threads} < museq_commands.txt
+            variant_utils merge_vcf_files --inputs museq_vcf/*vcf --output merged.vcf
         fi
 
-        for interval in $intervals
-            do
-                echo "museq normal:normal.bam tumour:tumour.bam reference:~{reference} \
-                --out museq_vcf/${interval}.vcf --log museq_log/${interval}.log -v -i ${interval} ">> museq_commands.txt
-            done
-        parallel --jobs ~{num_threads} < museq_commands.txt
-
-
-        variant_utils merge_vcf_files --inputs museq_vcf/*vcf --output merged.vcf
         variant_utils fix_museq_vcf --input merged.vcf --output merged.fixed.vcf
         vcf-sort merged.fixed.vcf > merged.sorted.fixed.vcf
         bgzip merged.sorted.fixed.vcf -c > merged.sorted.fixed.vcf.gz
