@@ -17,11 +17,12 @@ task VariantBam{
         if [[ ~{num_threads} -eq 1 ]]
         then
             variant ~{input_bam} -m ~{max_coverage} -k ~{interval} -v -b -o output.bam
-        else:
-            intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
-            for interval in $intervals
+        else
+            mkdir variant_bam
+            split_intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+            for splitinterval in $split_intervals
                 do
-                    echo "variant ~{input_bam} -m ~{max_coverage} -k ${interval} -v -b -o variant_bam/${interval}.bam" >> variant_commands.txt
+                    echo "variant ~{input_bam} -m ~{max_coverage} -k $splitinterval -v -b -o variant_bam/$splitinterval.bam" >> variant_commands.txt
                 done
             parallel --jobs ~{num_threads} < variant_commands.txt
             sambamba merge -t ~{num_threads} output.bam variant_bam/*bam

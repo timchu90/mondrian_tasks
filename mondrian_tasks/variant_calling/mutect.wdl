@@ -8,8 +8,8 @@ task GetPileup{
         File reference
         File reference_fai
         File reference_dict
-        File variants_for_contamination
-        File variants_for_contamination_idx
+        File? variants_for_contamination
+        File? variants_for_contamination_idx
         String chromosome
         String? singularity_image
         String? docker_image
@@ -49,10 +49,10 @@ task RunMutect{
         File reference
         File reference_fai
         File reference_dict
-        File panel_of_normals
-        File panel_of_normals_idx
-        File gnomad
-        File gnomad_idx
+        File? panel_of_normals
+        File? panel_of_normals_idx
+        File? gnomad
+        File? gnomad_idx
         String interval
         String? singularity_image
         String? docker_image
@@ -72,8 +72,8 @@ task RunMutect{
             gatk Mutect2 \
             -I ~{normal_bam} -normal `cat normal_name.txt` \
             -I ~{tumour_bam}  -tumor `cat tumour_name.txt` \
-            -pon ~{panel_of_normals} \
-            --germline-resource ~{gnomad} \
+            ~{"-pon " + panel_of_normals} \
+            ~{"--germline-resource " + gnomad} \
             --f1r2-tar-gz raw_data/~{interval}_f1r2.tar.gz \
             -R ~{reference} -O raw_data/~{interval}.vcf  --intervals ~{interval}
             mv raw_data/~{interval}.vcf merged.vcf
@@ -86,8 +86,8 @@ task RunMutect{
                     echo "gatk Mutect2 \
                     -I ~{normal_bam} -normal `cat normal_name.txt` \
                     -I ~{tumour_bam}  -tumor `cat tumour_name.txt` \
-                    -pon ~{panel_of_normals} \
-                    --germline-resource ~{gnomad} \
+                    ~{"-pon " + panel_of_normals} \
+                    ~{"--germline-resource " + gnomad} \
                     --f1r2-tar-gz raw_data/${interval}_f1r2.tar.gz \
                     -R ~{reference} -O raw_data/${interval}.vcf.gz  --intervals ${interval} ">> commands.txt
                 done
@@ -242,8 +242,8 @@ task Filter {
       File unfiltered_vcf
       File unfiltered_vcf_tbi
       File mutect_stats
-      File contamination_table
-      File maf_segments
+      File? contamination_table
+      File? maf_segments
       File artifact_priors_tar_gz
       String? singularity_image
       String? docker_image
@@ -257,8 +257,8 @@ task Filter {
             -O filtered.vcf.gz \
             -stats ~{mutect_stats} \
             --ob-priors ~{artifact_priors_tar_gz} \
-            --contamination-table ~{contamination_table} \
-            --tumor-segmentation ~{maf_segments} \
+            ~{"--contamination-table " + contamination_table} \
+            ~{"--tumor-segmentation " + maf_segments} \
             --filtering-stats filtering.stats
     }
     output {
@@ -281,7 +281,7 @@ task FilterAlignmentArtifacts {
       File ref_fasta
       File ref_fai
       File ref_dict
-      File realignment_index_bundle
+      File? realignment_index_bundle
       File input_vcf
       File input_vcf_tbi
       File tumour_bam
