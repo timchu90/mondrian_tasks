@@ -74,7 +74,7 @@ task AlignPostprocessAllLanes{
     }
     runtime{
         memory: '~{memory_gb} GB'
-        cpu: 1
+        cpu: "~{num_threads}"
         walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

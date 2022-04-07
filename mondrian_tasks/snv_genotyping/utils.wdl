@@ -6,6 +6,7 @@ task Genotyper{
         File bai
         File vcf_file
         File vcf_file_idx
+        File? cell_barcodes
         Array[String] intervals
         String filename_prefix = "snv_genotyping"
         String? singularity_image
@@ -17,7 +18,8 @@ task Genotyper{
     command<<<
         for interval in ~{sep=" "intervals}
             do
-                echo "snv_genotyping_utils snv_genotyper --interval ${interval} --bam ~{bam} \
+                echo "snv_genotyping_utils snv_genotyper \
+                 --interval ${interval} --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
                  --targets_vcf ~{vcf_file}  --output ${interval}.genotype.csv.gz" >> commands.txt
             done
         parallel --jobs ~{num_threads} < commands.txt
