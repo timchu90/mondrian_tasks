@@ -4,6 +4,8 @@ task RunVcf2Maf{
     input{
         File input_vcf
         File vep_ref
+        String vep_fasta_suffix
+        String ncbi_build
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
@@ -23,9 +25,8 @@ task RunVcf2Maf{
         rm -f uncompressed.vep.vcf
 
         vcf2maf uncompressed.vcf output.maf \
-          vep_ref_dir/vep/homo_sapiens/99_GRCh37/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa.gz \
-          vep_ref_dir/vep/ExAC_nonTCGA.r0.3.1.sites.vep.vcf.gz \
-          vep_ref_dir/vep
+          vep_ref_dir/vep/~{vep_fasta_suffix} \
+          vep_ref_dir/vep ~{ncbi_build}
     >>>
     output{
         File output_maf = 'output.maf'
