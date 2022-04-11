@@ -6,6 +6,7 @@ task RunVcf2Maf{
         File vep_ref
         String vep_fasta_suffix
         String ncbi_build
+        String cache_version
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
@@ -26,7 +27,7 @@ task RunVcf2Maf{
 
         vcf2maf uncompressed.vcf output.maf \
           vep_ref_dir/vep/~{vep_fasta_suffix} \
-          vep_ref_dir/vep ~{ncbi_build}
+          vep_ref_dir/vep ~{ncbi_build} ~{cache_version}
     >>>
     output{
         File output_maf = 'output.maf'
