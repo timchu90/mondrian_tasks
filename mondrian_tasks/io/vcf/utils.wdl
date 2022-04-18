@@ -33,3 +33,32 @@ task VcfReheaderId{
         singularity: '~{singularity_image}'
     }
 }
+
+
+task GetRegionFromVcf{
+    input{
+        File input_vcf
+        File input_tbi
+        String interval
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
+    }
+    command<<<
+        bcftools view ~{input_vcf} ~{interval} -o output.vcf
+        bgzip output.vcf
+        tabix output.vcf.gz
+    >>>
+    output{
+        File output_vcf = "output.vcf.gz"
+        File output_tbi = "output.vcf.gz.tbi"
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}

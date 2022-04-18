@@ -7,7 +7,7 @@ task Genotyper{
         File vcf_file
         File vcf_file_idx
         File? cell_barcodes
-        Array[String] intervals
+        String interval
         String filename_prefix = "snv_genotyping"
         String? singularity_image
         String? docker_image
@@ -16,16 +16,24 @@ task Genotyper{
         Int? walltime_hours = 24
     }
     command<<<
-        for interval in ~{sep=" "intervals}
-            do
-                echo "snv_genotyping_utils snv_genotyper \
-                 --interval ${interval} --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
-                 --targets_vcf ~{vcf_file}  --output ${interval}.genotype.csv.gz" >> commands.txt
-            done
-        parallel --jobs ~{num_threads} < commands.txt
+        if [[ ~{num_threads} -eq 1 ]]
+        then
+            snv_genotyping_utils snv_genotyper --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
+            --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz
+        else
+            mkdir outdir
+            intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+            for interval in ${intervals}
+                do
+                    echo "snv_genotyping_utils snv_genotyper \
+                     --interval ${interval} --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
+                     --targets_vcf ~{vcf_file}  --output outdir/${interval}.genotype.csv.gz" >> commands.txt
+                done
+            parallel --jobs ~{num_threads} < commands.txt
 
-        inputs=`echo *genotype.csv.gz | sed "s/ / --in_f /g"`
-        csverve concat --in_f $inputs  --out_f ~{filename_prefix}.csv.gz --write_header
+            inputs=`echo outdir/*genotype.csv.gz | sed "s/ / --in_f /g"`
+            csverve concat --in_f $inputs  --out_f ~{filename_prefix}.csv.gz --write_header
+        fi
     >>>
     output{
         File output_csv = "~{filename_prefix}.csv.gz"
@@ -33,7 +41,7 @@ task Genotyper{
     }
     runtime{
         memory: "~{memory_gb} GB"
-        cpu: 1
+        cpu: "~{num_threads}"
         walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
@@ -107,6 +115,7 @@ task RunVartrix{
         File cell_barcodes
         String? singularity_image
         String? docker_image
+        Int? num_threads = 1
         Int? memory_gb = 12
         Int? walltime_hours = 48
     }
@@ -121,41 +130,14 @@ task RunVartrix{
         --ref-matrix out_snv_ref.txt \
         --mapq 20 \
         --no-duplicates \
-        --primary-alignments
-    >>>
-    output{
-        File out_barcodes = "out_snv_barcodes.txt"
-        File out_variants = "out_snv_variants.txt"
-        File ref_counts = "out_snv_ref.txt"
-        File alt_counts = "out_snv_matrix.mtx"
-    }
-    runtime{
-        memory: "~{memory_gb} GB"
-        cpu: 1
-        walltime: "~{walltime_hours}:00"
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
+        --primary-alignments \
+        --threads ~{num_threads}
 
-
-task ParseVartrix{
-    input{
-        File barcodes
-        File variants
-        File ref_counts
-        File alt_counts
-        String? singularity_image
-        String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
-    }
-    command<<<
         snv_genotyping_utils parse_vartrix \
-        --barcodes ~{barcodes} \
-        --variants ~{variants} \
-        --ref_counts ~{ref_counts} \
-        --alt_counts ~{alt_counts} \
+        --barcodes out_snv_barcodes.txt \
+        --variants out_snv_variants.txt  \
+        --ref_counts out_snv_ref.txt \
+        --alt_counts out_snv_matrix.mtx \
         --outfile vartrix_parsed.csv.gz
     >>>
     output{
@@ -164,7 +146,7 @@ task ParseVartrix{
     }
     runtime{
         memory: "~{memory_gb} GB"
-        cpu: 1
+        cpu: "~{num_threads}"
         walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
