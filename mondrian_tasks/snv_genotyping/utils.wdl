@@ -8,6 +8,7 @@ task Genotyper{
         File vcf_file_idx
         File? cell_barcodes
         String interval
+        Boolean ignore_unmapped_reads = false
         String filename_prefix = "snv_genotyping"
         String? singularity_image
         String? docker_image
@@ -19,7 +20,8 @@ task Genotyper{
         if [[ ~{num_threads} -eq 1 ]]
         then
             snv_genotyping_utils snv_genotyper --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
-            --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz
+            --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz \
+            ~{true='--ignore_unmapped_reads' false='' ignore_unmapped_reads}
         else
             mkdir outdir
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
@@ -27,6 +29,7 @@ task Genotyper{
                 do
                     echo "snv_genotyping_utils snv_genotyper \
                      --interval ${interval} --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
+                    ~{true='--ignore_unmapped_reads' false='' ignore_unmapped_reads} \
                      --targets_vcf ~{vcf_file}  --output outdir/${interval}.genotype.csv.gz" >> commands.txt
                 done
             parallel --jobs ~{num_threads} < commands.txt
