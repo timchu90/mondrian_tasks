@@ -62,3 +62,31 @@ task GetRegionFromVcf{
         singularity: '~{singularity_image}'
     }
 }
+
+
+task SplitVcf{
+    input{
+        File input_vcf
+        String num_splits
+        String? singularity_image
+        String? docker_image
+        Int? memory_gb = 12
+        Int? walltime_hours = 8
+    }
+    command<<<
+        vcf_utils split_vcf --infile ~{input_vcf} --num_splits ~{num_splits} --outdir temp_output
+
+        ls temp_output|while read x; do bgzip temp_output/${x} && tabix temp_output/${x}.gz;done
+    >>>
+    output{
+        Array[File] output_vcf = glob("temp_output/*.vcf.gz")
+        Array[File] output_tbi = glob("temp_output/*.vcf.gz.tbi")
+    }
+    runtime{
+        memory: "~{memory_gb} GB"
+        cpu: 1
+        walltime: "~{walltime_hours}:00"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
