@@ -116,6 +116,7 @@ task RunVartrix{
         File fasta_fai
         File vcf_file
         File cell_barcodes
+        Boolean? skip_header = false
         String? singularity_image
         String? docker_image
         Int? num_threads = 1
@@ -141,7 +142,8 @@ task RunVartrix{
         --variants out_snv_variants.txt  \
         --ref_counts out_snv_ref.txt \
         --alt_counts out_snv_matrix.mtx \
-        --outfile vartrix_parsed.csv.gz
+        --outfile vartrix_parsed.csv.gz \
+        ~{true='--skip_header' false='' skip_header}
     >>>
     output{
         File outfile = "vartrix_parsed.csv.gz"
