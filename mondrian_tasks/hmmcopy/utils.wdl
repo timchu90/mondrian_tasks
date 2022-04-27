@@ -329,6 +329,7 @@ task AddClusteringOrder{
         File metrics_yaml
         File reads
         File reads_yaml
+        Array[String] chromosomes
         String filename_prefix = "added_clustering_order"
         String? singularity_image
         String? docker_image
@@ -338,7 +339,7 @@ task AddClusteringOrder{
     command<<<
     hmmcopy_utils add_clustering_order \
      --reads ~{reads} --output ~{filename_prefix}.csv.gz \
-     --metrics ~{metrics}
+     --metrics ~{metrics} --chromosomes ~{sep=" "chromosomes}
     >>>
     output{
         File output_csv = "~{filename_prefix}.csv.gz"
