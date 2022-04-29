@@ -253,7 +253,7 @@ task AddQuality{
     runtime{
         memory: "~{memory_gb} GB"
         cpu: 1
-        walltime: "~{walltime_hours}"
+        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

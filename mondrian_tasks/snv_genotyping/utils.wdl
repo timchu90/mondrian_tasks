@@ -144,7 +144,7 @@ task RunVartrix{
         --ref_counts out_snv_ref.txt \
         --alt_counts out_snv_matrix.mtx \
         --outfile vartrix_parsed.csv.gz \
-        ~{true='--skip_header' false='' skip_header}
+        ~{true='--skip_header' false='' skip_header} \
         ~{true='--sparse' false='' sparse}
     >>>
     output{
