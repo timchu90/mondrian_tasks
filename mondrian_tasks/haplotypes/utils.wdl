@@ -131,6 +131,7 @@ task InferHaps{
         String haplotypes_filename_template
         String legend_filename_template
         String sample_filename
+        String phased_chromosome_x
         String? singularity_image
         String? docker_image
         Int? memory_gb = 12
@@ -146,7 +147,8 @@ task InferHaps{
         --genetic_map_filename_template ~{genetic_map_filename_template} \
         --haplotypes_filename_template ~{haplotypes_filename_template} \
         --legend_filename_template ~{legend_filename_template} \
-        --sample_filename ~{sample_filename}
+        --sample_filename ~{sample_filename} \
+        --phased_chromosome_x ~{phased_chromosome_x}
     >>>
     output{
         File haplotypes = "haplotypes.tsv"
