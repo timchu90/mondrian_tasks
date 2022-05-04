@@ -106,7 +106,7 @@ task MergeMafs{
         Int? walltime_hours = 8
     }
     command<<<
-        touch ~{filename_prefix}.maf
+        variant_utils merge_mafs --infiles ~{sep=" "input_mafs} --output ~{filename_prefix}.maf
     >>>
     output{
         File output_maf = "~{filename_prefix}.maf"
