@@ -7,7 +7,7 @@ task Genotyper{
         File vcf_file
         File vcf_file_idx
         File? cell_barcodes
-        String interval
+        String? interval
         Boolean ignore_untagged_reads = false
         String filename_prefix = "snv_genotyping"
         String? singularity_image
@@ -21,14 +21,16 @@ task Genotyper{
         then
             snv_genotyping_utils snv_genotyper --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
             --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz \
-            ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads}
+            ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
+            ~{'--interval' + interval}
+
         else
             mkdir outdir
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
             for interval in ${intervals}
                 do
                     echo "snv_genotyping_utils snv_genotyper \
-                     --interval ${interval} --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
+                    ~{'--interval' + interval}  --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
                     ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
                      --targets_vcf ~{vcf_file}  --output outdir/${interval}.genotype.csv.gz" >> commands.txt
                 done
