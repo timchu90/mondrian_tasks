@@ -8,8 +8,8 @@ task GetGenomeSize{
         String? docker_image
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -19,9 +19,9 @@ task GetGenomeSize{
         String genome_size = read_string('genome_size.txt')
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -39,9 +39,8 @@ task GenerateChromDepth{
         String? docker_image
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
-
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         mkdir raw_data
@@ -56,9 +55,9 @@ task GenerateChromDepth{
         File chrom_depth = "chrom_depth.txt"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -100,8 +99,8 @@ task RunStrelka{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
 
@@ -186,9 +185,9 @@ task RunStrelka{
         Array[File] stats = glob("*stats.txt")
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

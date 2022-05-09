@@ -21,8 +21,8 @@ task RunDestruct{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 120
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         echo "genome_fasta = '~{reference}'; genome_fai = '~{reference_fai}'; gtf_filename = '~{reference_gtf}'" > config.py
@@ -40,9 +40,9 @@ task RunDestruct{
         File read_table = "~{filename_prefix}_breakpoint_read_table.csv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: num_threads
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

@@ -7,8 +7,8 @@ task GenerateIntervals{
         Int interval_size = 1000000
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         variant_utils generate_intervals --reference ~{reference} --chromosomes ~{sep=" "  chromosomes} --size ~{interval_size} > intervals.txt
@@ -17,9 +17,9 @@ task GenerateIntervals{
         Array[String] intervals = read_lines('intervals.txt')
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

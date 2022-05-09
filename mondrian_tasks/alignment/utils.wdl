@@ -34,8 +34,8 @@ task AlignPostprocessAllLanes{
         Int? num_threads
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 22
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         alignment_utils alignment \
@@ -73,9 +73,9 @@ task AlignPostprocessAllLanes{
         File tar_output = "~{cell_id}.tar.gz"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: '~{select_first([memory_override, 7])} GB'
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: "~{num_threads}"
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -90,8 +90,8 @@ task TrimGalore{
         String adapter2
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils trim_galore --r1 ~{r1} --r2 ~{r2} \
@@ -103,9 +103,9 @@ task TrimGalore{
         File output_r2 = "trimmed_r2.fastq.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -118,8 +118,8 @@ task TagBamWithCellid{
         String cell_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 12
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils tag_bam_with_cellid --infile ~{infile} --outfile outfile.bam --cell_id ~{cell_id}
@@ -128,9 +128,9 @@ task TagBamWithCellid{
         File outfile = "outfile.bam"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -148,8 +148,8 @@ task BamMerge{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
@@ -166,9 +166,9 @@ task BamMerge{
         File control_outfile_bai = "~{filename_prefix}_control.bam.bai"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: '~{num_threads}'
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
         disks: "local-disk " + length(input_bams) + " HDD"
@@ -183,8 +183,8 @@ task AddContaminationStatus{
         String reference_genome
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils add_contamination_status --infile ~{input_csv} --outfile output.csv.gz \
@@ -195,9 +195,9 @@ task AddContaminationStatus{
         File output_yaml = "output.csv.gz.yaml"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -211,8 +211,8 @@ task ClassifyFastqscreen{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils classify_fastqscreen --training_data ~{training_data} --metrics ~{metrics} --output ~{filename_prefix}.csv.gz
@@ -222,9 +222,9 @@ task ClassifyFastqscreen{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -248,8 +248,8 @@ task AlignmentMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 7
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils generate_metadata \
@@ -265,9 +265,9 @@ task AlignmentMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

@@ -5,8 +5,8 @@ task SplitBam{
         File bam
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         bam_utils split_bam_by_barcode --infile ~{bam} --outdir tempdir
@@ -15,9 +15,9 @@ task SplitBam{
         Array[File] cell_bams = glob('tempdir/*bam')
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -31,8 +31,8 @@ task ExtractSeqData{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         if [[ -z "~{bai}" ]]; then
@@ -53,9 +53,9 @@ task ExtractSeqData{
         File seqdata = "output.h5"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -71,8 +71,8 @@ task ExtractChromosomeSeqData{
         String chromosome
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils extract_chromosome_seqdata --bam ~{bam} \
@@ -84,9 +84,9 @@ task ExtractChromosomeSeqData{
         File seqdata = "output.h5"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -99,8 +99,8 @@ task InferSnpGenotypeFromNormal{
         String chromosome
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     haplotype_utils infer_snp_genotype_from_normal \
@@ -112,9 +112,9 @@ task InferSnpGenotypeFromNormal{
         File snp_genotype = "snp_genotype.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -134,8 +134,8 @@ task InferHaps{
         String phased_chromosome_x
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils infer_haps \
@@ -154,9 +154,9 @@ task InferHaps{
         File haplotypes = "haplotypes.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -168,8 +168,8 @@ task MergeSeqData{
         Array[File] infiles
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils merge_seqdata --inputs ~{sep=" "infiles} --output output.h5
@@ -178,9 +178,9 @@ task MergeSeqData{
         File merged_haps = "output.h5"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -193,8 +193,8 @@ task MergeHaps{
         Array[File] infiles
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils merge_haps --inputs ~{sep=" "infiles} --output output.tsv
@@ -203,9 +203,9 @@ task MergeHaps{
         File merged_haps = "output.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -218,8 +218,8 @@ task AnnotateHaps{
         File thousand_genomes_snps
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils annotate_haps --input ~{infile} \
@@ -231,9 +231,9 @@ task AnnotateHaps{
         File outfile_yaml = "annotated.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -247,8 +247,8 @@ task CreateSegments{
         File gap_table
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils create_segments \
@@ -260,9 +260,9 @@ task CreateSegments{
         File segments = "output.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -275,8 +275,8 @@ task ConvertHaplotypesCsvToTsv{
         File infile_yaml
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils convert_haplotypes_csv_to_tsv \
@@ -287,9 +287,9 @@ task ConvertHaplotypesCsvToTsv{
         File outfile = "output.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -304,8 +304,8 @@ task HaplotypeAlleleReadcount{
         File haplotypes
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         mkdir -p temp
@@ -321,9 +321,9 @@ task HaplotypeAlleleReadcount{
         File outfile_yaml = "allele_counts.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -336,8 +336,8 @@ task HaplotypesMetadata{
         Array[String] samples
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 7
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         haplotype_utils generate_metadata \
@@ -350,9 +350,9 @@ task HaplotypesMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

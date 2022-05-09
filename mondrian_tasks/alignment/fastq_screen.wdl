@@ -28,8 +28,8 @@ task FastqScreen{
         String cell_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         alignment_utils fastqscreen --r1 ~{fastq1} --r2 ~{fastq2} \
@@ -49,9 +49,9 @@ task FastqScreen{
         File summary_metrics = "summary_metrics.csv.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -63,8 +63,8 @@ task MergeFastqscreenCounts{
         Array[File] summary_counts
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils merge_fastqscreen_counts \
@@ -80,9 +80,9 @@ task MergeFastqscreenCounts{
         File merged_summary_yaml = "summary.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

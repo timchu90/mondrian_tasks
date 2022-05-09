@@ -10,8 +10,8 @@ task VariantBam{
         String? docker_image
         Int max_coverage=10000
         Int? num_threads = 1
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         if [[ ~{num_threads} -eq 1 ]]
@@ -35,9 +35,9 @@ task VariantBam{
         File output_bai = 'output.bam.bai'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

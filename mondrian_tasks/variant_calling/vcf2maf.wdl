@@ -10,8 +10,8 @@ task RunVcf2Maf{
         String species
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -34,9 +34,9 @@ task RunVcf2Maf{
         File output_maf = 'output.maf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -50,9 +50,8 @@ task UpdateMafId{
         String tumour_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
-
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         variant_utils update_maf_ids --input ~{input_maf} --tumour_id ~{tumour_id} --normal_id ~{normal_id} --output updated_id.maf
@@ -61,9 +60,9 @@ task UpdateMafId{
         File output_maf = 'updated_id.maf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -76,8 +75,8 @@ task UpdateMafCounts{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -87,9 +86,9 @@ task UpdateMafCounts{
         File output_maf = filename_prefix + '_updated_counts.maf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -102,8 +101,8 @@ task MergeMafs{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         variant_utils merge_mafs --infiles ~{sep=" "input_mafs} --output ~{filename_prefix}.maf
@@ -112,9 +111,9 @@ task MergeMafs{
         File output_maf = "~{filename_prefix}.maf"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

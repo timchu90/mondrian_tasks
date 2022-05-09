@@ -14,8 +14,8 @@ task GetPileup{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         mkdir outdir
@@ -30,9 +30,9 @@ task GetPileup{
         File pileups = "pileups.table"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -57,8 +57,8 @@ task RunMutect{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
 
@@ -112,9 +112,9 @@ task RunMutect{
         Array[File] f1r2 = glob("raw_data/*_f1r2.tar.gz")
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -122,12 +122,12 @@ task RunMutect{
 
 task MergeVCFs {
     input {
-      Array[File] vcf_files
-      Array[File] vcf_files_tbi
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 12
-      Int? walltime_hours = 8
+        Array[File] vcf_files
+        Array[File] vcf_files_tbi
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         set -e
@@ -138,9 +138,9 @@ task MergeVCFs {
         File merged_vcf_tbi = "merged.vcf.gz.tbi"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -150,11 +150,11 @@ task MergeVCFs {
 
 task MergeStats {
     input {
-      Array[File] stats
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 8
-      Int? walltime_hours = 8
+        Array[File] stats
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         set -e
@@ -165,9 +165,9 @@ task MergeStats {
         File merged_stats = "merged.stats"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -176,12 +176,12 @@ task MergeStats {
 
 task MergePileupSummaries {
     input {
-      Array[File] input_tables
-      File reference_dict
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 8
-      Int? walltime_hours = 8
+        Array[File] input_tables
+        File reference_dict
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
 
     command {
@@ -195,9 +195,9 @@ task MergePileupSummaries {
         File merged_table = "merged_pileup.tsv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -205,12 +205,12 @@ task MergePileupSummaries {
 
 task CalculateContamination {
     input {
-      File tumour_pileups
-      File normal_pileups
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 8
-      Int? walltime_hours = 8
+        File tumour_pileups
+        File normal_pileups
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
 
     command {
@@ -225,9 +225,9 @@ task CalculateContamination {
         File maf_segments = "segments.table"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{if walltime_override then walltime_override else 24}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -236,19 +236,19 @@ task CalculateContamination {
 
 task Filter {
     input {
-      File reference
-      File reference_fai
-      File reference_dict
-      File unfiltered_vcf
-      File unfiltered_vcf_tbi
-      File mutect_stats
-      File? contamination_table
-      File? maf_segments
-      File artifact_priors_tar_gz
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 8
-      Int? walltime_hours = 8
+        File reference
+        File reference_fai
+        File reference_dict
+        File unfiltered_vcf
+        File unfiltered_vcf_tbi
+        File mutect_stats
+        File? contamination_table
+        File? maf_segments
+        File artifact_priors_tar_gz
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         set -e
@@ -267,9 +267,9 @@ task Filter {
         File filtering_stats = "filtering.stats"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -278,18 +278,18 @@ task Filter {
 
 task FilterAlignmentArtifacts {
     input {
-      File ref_fasta
-      File ref_fai
-      File ref_dict
-      File? realignment_index_bundle
-      File input_vcf
-      File input_vcf_tbi
-      File tumour_bam
-      File tumour_bam_index
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 16
-      Int? walltime_hours = 24
+        File ref_fasta
+        File ref_fai
+        File ref_dict
+        File? realignment_index_bundle
+        File input_vcf
+        File input_vcf_tbi
+        File tumour_bam
+        File tumour_bam_index
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         set -e
@@ -305,9 +305,9 @@ task FilterAlignmentArtifacts {
         File filtered_vcf_idx = "output.vcf.gz.tbi"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -315,11 +315,11 @@ task FilterAlignmentArtifacts {
 
 task LearnReadOrientationModel {
     input {
-      Array[File] f1r2_tar_gz
-      String? singularity_image
-      String? docker_image
-      Int? memory_gb = 16
-      Int? walltime_hours = 24
+        Array[File] f1r2_tar_gz
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
     }
 
     command {
@@ -332,9 +332,9 @@ task LearnReadOrientationModel {
         File artifact_prior_table = "artifact-priors.tar.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

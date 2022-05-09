@@ -7,8 +7,8 @@ task RewriteCsv{
         String dtypes
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         csverve_utils rewrite_csv --infile ~{infile} --outfile outfile.csv.gz --dtypes ~{dtypes}
@@ -18,9 +18,9 @@ task RewriteCsv{
         File outfile_yaml = 'outfile.csv.gz.yaml'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -35,8 +35,8 @@ task ConcatenateCsv {
         String filename_prefix = 'output'
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz --write_header \
@@ -47,9 +47,9 @@ task ConcatenateCsv {
         File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -64,8 +64,8 @@ task MergeCsv{
         String how
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         csverve merge --in_f ~{sep=" --in_f " inputfiles} --out_f merged.csv.gz --on ~{on} --how ~{how} --write_header
@@ -75,9 +75,9 @@ task MergeCsv{
         File outfile_yaml = 'merged.csv.gz.yaml'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -90,8 +90,8 @@ task FinalizeCsv {
         Array[File] inputfile
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         variant_utils concat_csv  --inputs ~{sep=" " inputfile} --output concat.csv --write_header
@@ -101,9 +101,9 @@ task FinalizeCsv {
         File outfile = "concat.csv"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -118,8 +118,8 @@ task AnnotateCsv {
         String col_dtype
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         csverve annotate \
@@ -135,9 +135,9 @@ task AnnotateCsv {
         File outfile_yaml = "annotated.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

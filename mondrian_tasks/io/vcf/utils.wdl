@@ -10,8 +10,8 @@ task VcfReheaderId{
         String vcf_normal_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         variant_utils vcf_reheader_id \
@@ -26,9 +26,9 @@ task VcfReheaderId{
         File output_file = "output.vcf.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -42,8 +42,8 @@ task GetRegionFromVcf{
         String interval
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         bcftools view ~{input_vcf} ~{interval} -o output.vcf
@@ -55,9 +55,9 @@ task GetRegionFromVcf{
         File output_tbi = "output.vcf.gz.tbi"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -70,8 +70,8 @@ task SplitVcf{
         String num_splits
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         vcf_utils split_vcf --infile ~{input_vcf} --num_splits ~{num_splits} --outdir temp_output
@@ -83,9 +83,9 @@ task SplitVcf{
         Array[File] output_tbi = glob("temp_output/*.vcf.gz.tbi")
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

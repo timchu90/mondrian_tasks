@@ -13,8 +13,8 @@ task RunReadCounter{
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         hmmcopy_utils readcounter --infile ~{bamfile} --outdir output -w 500000 --chromosomes ~{sep=" "chromosomes} -m 20 --exclude_list ~{repeats_satellite_regions}
@@ -25,9 +25,9 @@ task RunReadCounter{
         Array[File] wigs = glob('output*/*.wig')
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -42,8 +42,8 @@ task CorrectReadCount{
         String map_cutoff
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
@@ -54,9 +54,9 @@ task CorrectReadCount{
         File wig = 'output.wig'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -68,8 +68,8 @@ task RunHmmcopy{
         File corrected_wig
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     hmmcopy_utils run_hmmcopy \
@@ -93,9 +93,9 @@ task RunHmmcopy{
         File tarball = 'hmmcopy_data.tar.gz'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -116,8 +116,8 @@ task PlotHmmcopy{
         File reference_fai
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
@@ -129,9 +129,9 @@ task PlotHmmcopy{
         File bias_pdf = 'bias.pdf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -148,8 +148,8 @@ task PlotHeatmap{
         String filename_prefix = "heatmap"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         hmmcopy_utils heatmap --reads ~{reads} --metrics ~{metrics} \
@@ -159,9 +159,9 @@ task PlotHeatmap{
         File heatmap_pdf = '~{filename_prefix}.pdf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -175,8 +175,8 @@ task AddMappability{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     hmmcopy_utils add_mappability --infile ~{infile} --outfile ~{filename_prefix}.csv.gz
@@ -186,9 +186,9 @@ task AddMappability{
         File outfile_yaml = '~{filename_prefix}.csv.gz.yaml'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -203,8 +203,8 @@ task CellCycleClassifier{
         File alignment_metrics
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     cell_cycle_classifier train-classify ~{hmmcopy_reads} ~{hmmcopy_metrics} ~{alignment_metrics} output.csv.gz
@@ -221,9 +221,9 @@ task CellCycleClassifier{
         File outfile_yaml = 'rewrite.csv.gz.yaml'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -240,8 +240,8 @@ task AddQuality{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     hmmcopy_utils add_quality --hmmcopy_metrics ~{hmmcopy_metrics} --alignment_metrics ~{alignment_metrics} --training_data ~{classifier_training_data} --output ~{filename_prefix}.csv.gz --tempdir temp
@@ -251,9 +251,9 @@ task AddQuality{
         File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -268,8 +268,8 @@ task CreateSegmentsTar{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -282,9 +282,9 @@ task CreateSegmentsTar{
         File segments_fail = "~{filename_prefix}_fail.tar.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -301,8 +301,8 @@ task GenerateHtmlReport{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     hmmcopy_utils generate_html_report \
@@ -314,9 +314,9 @@ task GenerateHtmlReport{
         File html_report = "~{filename_prefix}_report.html"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -333,8 +333,8 @@ task AddClusteringOrder{
         String filename_prefix = "added_clustering_order"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     hmmcopy_utils add_clustering_order \
@@ -346,9 +346,9 @@ task AddClusteringOrder{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -371,8 +371,8 @@ task HmmcopyMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         hmmcopy_utils generate_metadata \
@@ -390,9 +390,9 @@ task HmmcopyMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

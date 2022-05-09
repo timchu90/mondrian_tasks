@@ -13,8 +13,8 @@ task Genotyper{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         if [[ ~{num_threads} -eq 1 ]]
@@ -45,9 +45,9 @@ task Genotyper{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -63,8 +63,8 @@ task SnvGenotypingMetadata{
         File metadata_input
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         snv_genotyping_utils generate_metadata \
@@ -77,9 +77,9 @@ task SnvGenotypingMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -92,8 +92,8 @@ task GenerateCellBarcodes{
         File baifile
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         snv_genotyping_utils generate_cell_barcodes --bam ~{bamfile} --output barcodes.txt
@@ -102,9 +102,9 @@ task GenerateCellBarcodes{
         File cell_barcodes = "barcodes.txt"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -123,8 +123,8 @@ task RunVartrix{
         String? singularity_image
         String? docker_image
         Int? num_threads = 1
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         vartrix_linux --bam ~{bamfile} \
@@ -154,9 +154,9 @@ task RunVartrix{
         File outfile_yaml = "vartrix_parsed.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

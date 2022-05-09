@@ -14,8 +14,8 @@ task RunMuseq{
         String? singularity_image
         String? docker_image
         Int? num_threads = 1
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         mkdir pythonegg && export PYTHON_EGG_CACHE=$PWD/pythonegg
@@ -49,9 +49,9 @@ task RunMuseq{
         File vcf_tbi = 'merged.sorted.fixed.vcf.gz.tbi'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -63,8 +63,8 @@ task FixMuseqVcf{
         File vcf_file
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -79,9 +79,9 @@ task FixMuseqVcf{
         File output_tbi = 'output.vcf.gz.tbi'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
