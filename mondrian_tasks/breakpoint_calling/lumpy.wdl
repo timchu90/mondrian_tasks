@@ -37,8 +37,8 @@ task LumpyExpress{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o ~{filename_prefix}_lumpy.vcf
