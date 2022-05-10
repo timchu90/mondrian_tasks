@@ -204,8 +204,8 @@ task MergeSamFiles{
         File output_bam="merged.bam"
     }
     runtime{
-        memory: "~{if memory_override then memory_override else 12} GB"
-        walltime: "~{if walltime_override then walltime_override else 48}:00"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
