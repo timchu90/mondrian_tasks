@@ -8,6 +8,7 @@ task Genotyper{
         File vcf_file_idx
         File? cell_barcodes
         String? interval
+        Boolean? skip_header = false
         Boolean ignore_untagged_reads = false
         String filename_prefix = "snv_genotyping"
         String? singularity_image
@@ -22,8 +23,8 @@ task Genotyper{
             snv_genotyping_utils snv_genotyper --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
             --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz \
             ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
-            ~{'--interval' + interval}
-
+            ~{'--interval' + interval} \
+            ~{true='--skip_header' false='' skip_header} \
         else
             mkdir outdir
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
@@ -32,6 +33,7 @@ task Genotyper{
                     echo "snv_genotyping_utils snv_genotyper \
                     ~{'--interval' + interval}  --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
                     ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
+                    ~{true='--skip_header' false='' skip_header} \
                      --targets_vcf ~{vcf_file}  --output outdir/${interval}.genotype.csv.gz" >> commands.txt
                 done
             parallel --jobs ~{num_threads} < commands.txt

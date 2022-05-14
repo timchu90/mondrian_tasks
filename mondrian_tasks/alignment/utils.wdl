@@ -167,7 +167,7 @@ task BamMerge{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        walltime: "~{select_first([walltime_override, 48])}:00"
         cpu: '~{num_threads}'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
