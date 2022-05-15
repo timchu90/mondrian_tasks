@@ -24,7 +24,7 @@ task Genotyper{
             --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz \
             ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
             ~{'--interval' + interval} \
-            ~{true='--skip_header' false='' skip_header} \
+            ~{true='--skip_header' false='' skip_header}
         else
             mkdir outdir
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
