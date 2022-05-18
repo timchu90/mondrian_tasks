@@ -7,8 +7,8 @@ task MarkDuplicates{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         picard -Xmx12G -Xms12G MarkDuplicates \
@@ -29,9 +29,9 @@ task MarkDuplicates{
         File metrics_txt = '~{filename_prefix}_markduplicates_metrics.txt'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -46,8 +46,8 @@ task CollectGcBiasMetrics{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         picard -Xmx12G -Xms12G CollectGcBiasMetrics \
@@ -65,9 +65,9 @@ task CollectGcBiasMetrics{
         File chart_pdf="~{filename_prefix}_gcbias_chart.pdf"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -82,8 +82,8 @@ task CollectWgsMetrics{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         picard -Xmx12G -Xms12G CollectWgsMetrics \
@@ -101,9 +101,9 @@ task CollectWgsMetrics{
         File metrics_txt="~{filename_prefix}_wgsmetrics.txt"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -117,8 +117,8 @@ task CollectInsertSizeMetrics{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         picard -Xmx12G -Xms12G CollectInsertSizeMetrics \
@@ -145,9 +145,9 @@ task CollectInsertSizeMetrics{
         File histogram_pdf='~{filename_prefix}_insert_histogram.pdf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -159,8 +159,8 @@ task SortSam{
         File input_bam
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         picard -Xmx12G -Xms12G SortSam \
@@ -175,9 +175,9 @@ task SortSam{
         File output_bam="markdups.bam"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -188,8 +188,8 @@ task MergeSamFiles{
         Array[File] input_bams
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 18
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         picard -Xmx12G -Xms12G MergeSamFiles \
@@ -204,9 +204,9 @@ task MergeSamFiles{
         File output_bam="merged.bam"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

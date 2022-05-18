@@ -6,8 +6,8 @@ task SamToBam{
         String outputSam
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         samtools view -bSh ${inputBam} > ${outputSam}
@@ -17,9 +17,9 @@ task SamToBam{
         File samfile = outputSam
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -31,8 +31,8 @@ task IndexBam{
         String outputBai
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
     samtools index ${inputBam} ${outputBai}
@@ -42,9 +42,9 @@ task IndexBam{
         File indexfile = outputBai
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -56,8 +56,8 @@ task Flagstat{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
 
     command{
@@ -67,9 +67,9 @@ task Flagstat{
         File flagstat_txt = '~{filename_prefix}_flagstat.txt'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -82,8 +82,8 @@ task MergeBams{
         String outputFile
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         samtools merge ${outputFile} ${sep=' ' inputBams}
@@ -92,9 +92,9 @@ task MergeBams{
         File mergedBam = outputFile
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -108,8 +108,8 @@ task ViewBam{
         String samtools_flags
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         samtools view ~{samtools_flags}  ~{"-F " + bam_flag} ${inputBam} > ${outputBam}
@@ -118,9 +118,9 @@ task ViewBam{
         File bamFile = outputBam
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -131,8 +131,8 @@ task SortBam{
         File inputBam
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         samtools sort ${inputBam} -o sorted.bam
@@ -141,9 +141,9 @@ task SortBam{
         File sortedBam = 'sorted.bam'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

@@ -7,8 +7,8 @@ task ExtractSplitReads{
         String outputBam
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         samtools view -h ~{inputBam} | lumpy_extractSplitReads_BwaMem -i stdin | samtools view -Sb - > ~{outputBam}
@@ -17,9 +17,9 @@ task ExtractSplitReads{
         File bamFile = outputBam
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -37,8 +37,8 @@ task LumpyExpress{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         lumpyexpress -B ~{normal_bam},~{tumour_bam} -S ~{normalSplitBam},~{tumourSplitBam} -D ~{normalDiscBam},~{tumourDiscBam} -o ~{filename_prefix}_lumpy.vcf
@@ -47,9 +47,9 @@ task LumpyExpress{
         File lumpy_vcf = '~{filename_prefix}_lumpy.vcf'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

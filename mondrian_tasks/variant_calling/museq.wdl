@@ -7,35 +7,53 @@ task RunMuseq{
         File normal_bai
         File tumour_bam
         File tumour_bai
+        Int max_coverage=10000
         File reference
         File reference_fai
-        Array[String] intervals
+        String interval
         String? singularity_image
         String? docker_image
-        Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? num_threads = 1
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
-        mkdir pythonegg
-        export PYTHON_EGG_CACHE=$PWD/pythonegg
-        for interval in ~{sep=" "intervals}
-            do
-                echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
-                --out ${interval}.vcf --log ${interval}.log -v -i ${interval} ">> commands.txt
-            done
-        parallel --jobs ~{num_threads} < commands.txt
+        mkdir pythonegg && export PYTHON_EGG_CACHE=$PWD/pythonegg
+
+        if [[ ~{num_threads} -eq 1 ]]
+        then
+            museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
+            --out merged.vcf --log museq.log -v -i ~{interval}
+        else
+            mkdir museq_vcf museq_log
+            intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+            for interval in $intervals
+                do
+                    echo "museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
+                    --out museq_vcf/${interval}.vcf --log museq_log/${interval}.log -v -i ${interval} ">> museq_commands.txt
+                done
+            parallel --jobs ~{num_threads} < museq_commands.txt
+            variant_utils merge_vcf_files --inputs museq_vcf/*vcf --output merged.vcf
+        fi
+
+        variant_utils fix_museq_vcf --input merged.vcf --output merged.fixed.vcf
+        vcf-sort merged.fixed.vcf > merged.sorted.fixed.vcf
+        bgzip merged.sorted.fixed.vcf -c > merged.sorted.fixed.vcf.gz
+        bcftools index merged.sorted.fixed.vcf.gz
+        tabix -f -p vcf merged.sorted.fixed.vcf.gz
     >>>
 
     output{
-        Array[File] vcf_files = glob("*.vcf")
+        File vcf = 'merged.sorted.fixed.vcf.gz'
+        File vcf_csi = 'merged.sorted.fixed.vcf.gz.csi'
+        File vcf_tbi = 'merged.sorted.fixed.vcf.gz.tbi'
     }
     runtime{
         memory: 12 * num_threads + "GB"
         disks: 'local-disk 500 HDD'
         preemptible: 0
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -47,8 +65,8 @@ task FixMuseqVcf{
         File vcf_file
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -63,58 +81,9 @@ task FixMuseqVcf{
         File output_tbi = 'output.vcf.gz.tbi'
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task VariantBam{
-    input{
-        File bamfile
-        File baifile
-        Int max_coverage=10000
-        Array[String] intervals
-        String? singularity_image
-        String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
-        Int? num_threads = 8
-    }
-    command<<<
-        mkdir variant_bam_outputs
-        for interval in ~{sep=" "intervals}
-            do
-                echo "variant ~{bamfile} -m ~{max_coverage} -k ${interval} -v -b -o variant_bam_outputs/${interval}.bam" >> commands.txt
-            done
-        parallel --jobs ~{num_threads} < commands.txt
-
-        num_files=`ls variant_bam_outputs/*bam |wc -l`
-
-        echo $num_files
-
-        num_threads_merge=$((~{num_threads} / 2))
-        num_threads_merge=$(($num_threads_merge>0 ? $num_threads_merge : 1))
-
-        if [[ $num_files -eq 1 ]]
-        then
-            mv variant_bam_outputs/*bam merged.bam
-        else
-            sambamba merge -t $num_threads_merge merged.bam variant_bam_outputs/*bam
-        fi
-        samtools index merged.bam
-    >>>
-    output{
-        File output_bam = "merged.bam"
-        File output_bai = "merged.bam.bai"
-    }
-    runtime{
-        memory: "~{memory_gb} GB"
-        cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

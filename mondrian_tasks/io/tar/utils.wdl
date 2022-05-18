@@ -6,8 +6,8 @@ task TarFiles{
         String filename_prefix = "output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 8
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command{
         mkdir ~{filename_prefix}
@@ -20,9 +20,9 @@ task TarFiles{
         File tar_output = '~{filename_prefix}.tar.gz'
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

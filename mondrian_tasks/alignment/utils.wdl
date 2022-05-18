@@ -31,10 +31,11 @@ task AlignPostprocessAllLanes{
         Int min_mqual=20
         Int min_bqual=20
         Boolean count_unpaired=false
+        Int? num_threads
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 22
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command {
         alignment_utils alignment \
@@ -55,7 +56,8 @@ task AlignPostprocessAllLanes{
         --metrics_gc_output gc_metrics.csv.gz \
         --fastqscreen_detailed_output detailed_fastqscreen.csv.gz \
         --fastqscreen_summary_output summary_fastqscreen.csv.gz \
-        --tar_output ~{cell_id}.tar.gz
+        --tar_output ~{cell_id}.tar.gz \
+        --num_threads ~{num_threads}
     }
     output {
         File bam = "aligned.bam"
@@ -71,9 +73,9 @@ task AlignPostprocessAllLanes{
         File tar_output = "~{cell_id}.tar.gz"
     }
     runtime{
-        memory: '~{memory_gb} GB'
-        cpu: 1
-        walltime: '~{walltime_hours}:00'
+        memory: '~{select_first([memory_override, 7])} GB'
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: "~{num_threads}"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
         disks: "local-disk 50 HDD"
@@ -89,8 +91,8 @@ task TrimGalore{
         String adapter2
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils trim_galore --r1 ~{r1} --r2 ~{r2} \
@@ -102,9 +104,9 @@ task TrimGalore{
         File output_r2 = "trimmed_r2.fastq.gz"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -117,8 +119,8 @@ task TagBamWithCellid{
         String cell_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 12
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils tag_bam_with_cellid --infile ~{infile} --outfile outfile.bam --cell_id ~{cell_id}
@@ -127,9 +129,9 @@ task TagBamWithCellid{
         File outfile = "outfile.bam"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -147,8 +149,8 @@ task BamMerge{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command <<<
         alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
@@ -166,10 +168,10 @@ task BamMerge{
     }
     runtime{
         memory: 12 * num_threads + "GB"
-        cpu: num_threads
         disks: if length(input_bams) > 3000 then "local-disk 5999 LOCAL" else if length(input_bams) > 1500 then "local-disk 2999 LOCAL" else if length(input_bams) > 750 then "local-disk 1499 LOCAL" else "local-disk 749 LOCAL"        
         preemptible: 0
-        walltime: '~{walltime_hours}:00'
+        walltime: "~{select_first([walltime_override, 48])}:00"
+        cpu: '~{num_threads}'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -183,8 +185,8 @@ task AddContaminationStatus{
         String reference_genome
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils add_contamination_status --infile ~{input_csv} --outfile output.csv.gz \
@@ -195,9 +197,9 @@ task AddContaminationStatus{
         File output_yaml = "output.csv.gz.yaml"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -211,8 +213,8 @@ task ClassifyFastqscreen{
         String filename_prefix
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils classify_fastqscreen --training_data ~{training_data} --metrics ~{metrics} --output ~{filename_prefix}.csv.gz
@@ -222,9 +224,9 @@ task ClassifyFastqscreen{
         File output_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -249,8 +251,8 @@ task AlignmentMetadata{
         String? singularity_image
         String? docker_image
         Int diskSize = ceil(2*(size(bam, "GB") + size(contaminated_bam, "GB") + size(control_bam, "GB")))
-        Int? memory_gb = 7
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils generate_metadata \
@@ -266,9 +268,9 @@ task AlignmentMetadata{
         File metadata_output = "metadata.yaml"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
         disks: "local-disk " + diskSize + " HDD"

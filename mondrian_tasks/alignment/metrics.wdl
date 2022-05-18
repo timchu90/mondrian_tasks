@@ -11,8 +11,8 @@ task CollectMetrics{
         File coverage_metrics_yaml
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 7
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils collect_metrics \
@@ -29,9 +29,9 @@ task CollectMetrics{
         File output_csv_yaml = "output.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -44,8 +44,8 @@ task CollectGcMetrics{
         String cell_id
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
         alignment_utils collect_gc_metrics \
@@ -58,9 +58,9 @@ task CollectGcMetrics{
         File output_csv_yaml = "output.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -74,8 +74,8 @@ task CoverageMetrics{
         String filename_prefix="output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 22
-        Int? walltime_hours = 24
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     alignment_utils coverage_metrics --bamfile ~{bamfile} --output ~{filename_prefix}.csv.gz
@@ -85,9 +85,9 @@ task CoverageMetrics{
         File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -102,8 +102,8 @@ task AddMetadata{
         String filename_prefix="output"
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 48
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
     alignment_utils add_metadata --metrics ~{metrics} --metadata ~{metadata_yaml} --output ~{filename_prefix}.csv.gz
@@ -113,9 +113,9 @@ task AddMetadata{
         File output_csv_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
-        memory: '~{memory_gb} GB'
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: '~{walltime_hours}:00'
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }

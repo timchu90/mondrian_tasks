@@ -8,8 +8,8 @@ task GetGenomeSize{
         String? docker_image
         String? singularity_image
         String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
+        Int? memory_override
+        Int? walltime_override
 
     }
     command<<<
@@ -19,9 +19,9 @@ task GetGenomeSize{
         String genome_size = read_string('genome_size.txt')
     }
     runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
@@ -39,54 +39,27 @@ task GenerateChromDepth{
         String? docker_image
         String? singularity_image
         String? docker_image
-        Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
-
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
+        mkdir raw_data
         for interval in ~{sep=" "chromosomes}
             do
-                echo "GetChromDepth --align-file ~{normal_bam} --chrom ${interval} --output-file ${interval}.chrom_depth.txt" >> commands.txt
+                GetChromDepth --align-file ~{normal_bam} --chrom ${interval} --output-file raw_data/${interval}.chrom_depth.txt
             done
-        parallel --jobs ~{num_threads} < commands.txt
+        variant_utils merge_chromosome_depths_strelka --inputs raw_data/* --output chrom_depth.txt
+
     >>>
     output{
-        Array[File] chrom_depths = glob("*.chrom_depth.txt")
+        File chrom_depth = "chrom_depth.txt"
     }
     runtime{
-        memory: 12 * cores + "GB"
-        cpu: cores
-        disks: 'local-disk 250 HDD'
-        walltime: "~{walltime_hours}:00"
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task MergeChromDepths{
-    input{
-        Array[File] inputs
-        String? singularity_image
-        String? docker_image
-        String? singularity_image
-        String? docker_image
-        Int? memory_gb = 12
-        Int? walltime_hours = 8
-
-    }
-    command<<<
-        variant_utils merge_chromosome_depths_strelka --inputs ~{sep=" " inputs} --output output.txt
-    >>>
-    output{
-        File merged = "output.txt"
-    }
-    runtime{
-        memory: "~{memory_gb} GB"
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
+        disks: 'local-disk 250 HDD'
         singularity: '~{singularity_image}'
     }
 }
@@ -98,7 +71,7 @@ task RunStrelka{
         File normal_bai
         File tumour_bam
         File tumour_bai
-        Array[String] intervals
+        String interval
         File reference
         File reference_fai
         String genome_size
@@ -127,51 +100,97 @@ task RunStrelka{
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
-        Int? memory_gb = 12
-        Int? walltime_hours = 96
+        Int? memory_override
+        Int? walltime_override
     }
     command<<<
-        for interval in ~{sep=" "intervals}
-            do
-                echo "run_strelka ~{normal_bam} ~{tumour_bam} ${interval}.indels.vcf ${interval}.snv.vcf ${interval}.stats.txt ${interval} ~{reference} ~{genome_size} \
-                -max-indel-size 50 -min-qscore ~{min_qscore} -max-window-mismatch ~{sep=" " max_window_mismatch} \
-                -indel-nonsite-match-prob ~{indel_nonsite_match_prob} \
-                --tier2-mismatch-density-filter-count ~{tier2_mismatch_density_filter_count} \
-                --tier2-indel-nonsite-match-prob ~{tier2_indel_nonsite_match_prob} \
-                -min-mapping-quality ~{min_tier1_mapq} \
-                --somatic-snv-rate ~{ssnv_prior} \
-                --shared-site-error-rate ~{ssnv_noise} \
-                --shared-site-error-strand-bias-fraction ~{ssnv_noise_strand_bias_frac} \
-                --somatic-indel-rate ~{sindel_prior} \
-                --shared-indel-error-factor ~{sindel_noise_factor} \
-                --tier2-min-mapping-quality ~{min_tier2_mapq} \
-                --tier2-include-singleton \
-                --tier2-include-anomalous \
-                --strelka-snv-max-filtered-basecall-frac ~{snv_max_filtered_basecall_frac} \
-                --strelka-snv-max-spanning-deletion-frac ~{snv_max_spanning_deletion_frac} \
-                --strelka-snv-min-qss-ref ~{ssnv_quality_lower_bound} \
-                --strelka-indel-max-window-filtered-basecall-frac ~{indel_max_window_filtered_basecall_frac} \
-                --strelka-indel-min-qsi-ref ~{sindel_quality_lower_bound} \
-                --ssnv-contam-tolerance ~{ssnv_contam_tolerance} \
-                --indel-contam-tolerance ~{indel_contam_tolerance} \
-                --strelka-chrom-depth-file ~{chrom_depth_file} \
-                --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
-            done
 
-        parallel --jobs ~{num_threads} < commands.txt
+        if [[ ~{num_threads} -eq 1 ]]
+        then
+            run_strelka ~{normal_bam} ~{tumour_bam} merged_indels.vcf merged_snv.vcf ~{interval}.stats.txt ~{interval} ~{reference} ~{genome_size} \
+            -max-indel-size 50 -min-qscore ~{min_qscore} -max-window-mismatch ~{sep=" " max_window_mismatch} \
+            -indel-nonsite-match-prob ~{indel_nonsite_match_prob} \
+            --tier2-mismatch-density-filter-count ~{tier2_mismatch_density_filter_count} \
+            --tier2-indel-nonsite-match-prob ~{tier2_indel_nonsite_match_prob} \
+            -min-mapping-quality ~{min_tier1_mapq} \
+            --somatic-snv-rate ~{ssnv_prior} \
+            --shared-site-error-rate ~{ssnv_noise} \
+            --shared-site-error-strand-bias-fraction ~{ssnv_noise_strand_bias_frac} \
+            --somatic-indel-rate ~{sindel_prior} \
+            --shared-indel-error-factor ~{sindel_noise_factor} \
+            --tier2-min-mapping-quality ~{min_tier2_mapq} \
+            --tier2-include-singleton \
+            --tier2-include-anomalous \
+            --strelka-snv-max-filtered-basecall-frac ~{snv_max_filtered_basecall_frac} \
+            --strelka-snv-max-spanning-deletion-frac ~{snv_max_spanning_deletion_frac} \
+            --strelka-snv-min-qss-ref ~{ssnv_quality_lower_bound} \
+            --strelka-indel-max-window-filtered-basecall-frac ~{indel_max_window_filtered_basecall_frac} \
+            --strelka-indel-min-qsi-ref ~{sindel_quality_lower_bound} \
+            --ssnv-contam-tolerance ~{ssnv_contam_tolerance} \
+            --indel-contam-tolerance ~{indel_contam_tolerance} \
+            --strelka-chrom-depth-file ~{chrom_depth_file} \
+            --strelka-max-depth-factor ~{depth_filter_multiple}
+        else
+            intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
+            echo $intervals
+            for interval in $intervals
+                do
+                    echo "run_strelka ~{normal_bam} ~{tumour_bam} ${interval}.indels.vcf ${interval}.snv.vcf ${interval}.stats.txt ${interval} ~{reference} ~{genome_size} \
+                    -max-indel-size 50 -min-qscore ~{min_qscore} -max-window-mismatch ~{sep=" " max_window_mismatch} \
+                    -indel-nonsite-match-prob ~{indel_nonsite_match_prob} \
+                    --tier2-mismatch-density-filter-count ~{tier2_mismatch_density_filter_count} \
+                    --tier2-indel-nonsite-match-prob ~{tier2_indel_nonsite_match_prob} \
+                    -min-mapping-quality ~{min_tier1_mapq} \
+                    --somatic-snv-rate ~{ssnv_prior} \
+                    --shared-site-error-rate ~{ssnv_noise} \
+                    --shared-site-error-strand-bias-fraction ~{ssnv_noise_strand_bias_frac} \
+                    --somatic-indel-rate ~{sindel_prior} \
+                    --shared-indel-error-factor ~{sindel_noise_factor} \
+                    --tier2-min-mapping-quality ~{min_tier2_mapq} \
+                    --tier2-include-singleton \
+                    --tier2-include-anomalous \
+                    --strelka-snv-max-filtered-basecall-frac ~{snv_max_filtered_basecall_frac} \
+                    --strelka-snv-max-spanning-deletion-frac ~{snv_max_spanning_deletion_frac} \
+                    --strelka-snv-min-qss-ref ~{ssnv_quality_lower_bound} \
+                    --strelka-indel-max-window-filtered-basecall-frac ~{indel_max_window_filtered_basecall_frac} \
+                    --strelka-indel-min-qsi-ref ~{sindel_quality_lower_bound} \
+                    --ssnv-contam-tolerance ~{ssnv_contam_tolerance} \
+                    --indel-contam-tolerance ~{indel_contam_tolerance} \
+                    --strelka-chrom-depth-file ~{chrom_depth_file} \
+                    --strelka-max-depth-factor ~{depth_filter_multiple}" >> commands.txt
+                done
+            parallel --jobs ~{num_threads} < commands.txt
+            variant_utils merge_vcf_files --inputs *.snv.vcf --output merged_snv.vcf
+            variant_utils merge_vcf_files --inputs *.indels.vcf --output merged_indels.vcf
+        fi
 
+            variant_utils fix_museq_vcf --input merged_snv.vcf --output merged_snv.fixed.vcf
+            vcf-sort merged_snv.fixed.vcf > merged_snv.sorted.fixed.vcf
+            bgzip merged_snv.sorted.fixed.vcf -c > merged_snv.sorted.fixed.vcf.gz
+            bcftools index merged_snv.sorted.fixed.vcf.gz
+            tabix -f -p vcf merged_snv.sorted.fixed.vcf.gz
+
+            variant_utils fix_museq_vcf --input merged_indels.vcf --output merged_indels.fixed.vcf
+            vcf-sort merged_indels.fixed.vcf > merged_indels.sorted.fixed.vcf
+            bgzip merged_indels.sorted.fixed.vcf -c > merged_indels.sorted.fixed.vcf.gz
+            bcftools index merged_indels.sorted.fixed.vcf.gz
+            tabix -f -p vcf merged_indels.sorted.fixed.vcf.gz
     >>>
     output{
-        Array[File] indels = glob("*.indels.vcf")
-        Array[File] snvs = glob("*.snv.vcf")
+        File indels = "merged_indels.sorted.fixed.vcf.gz"
+        File indels_csi = "merged_indels.sorted.fixed.vcf.gz.csi"
+        File indels_tbi = "merged_indels.sorted.fixed.vcf.gz.tbi"
+        File snv = "merged_snv.sorted.fixed.vcf.gz"
+        File snv_csi = "merged_snv.sorted.fixed.vcf.gz.csi"
+        File snv_tbi = "merged_snv.sorted.fixed.vcf.gz.tbi"
         Array[File] stats = glob("*stats.txt")
     }
     runtime{
         memory: 12 * num_threads + "GB"
         disks: 'local-disk 500 HDD'
         preemptible: 0
+        walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: "~{num_threads}"
-        walltime: "~{walltime_hours}:00"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
