@@ -273,7 +273,7 @@ task CreateSegmentsTar{
 
     }
     command<<<
-    hmmcopy_utils create_segs_tar --segs_png ~{sep = " " segments_plot} \
+    hmmcopy_utils create_segs_tar --segs_pdf ~{sep = " " segments_plot} \
     --metrics ~{hmmcopy_metrics} --pass_output ~{filename_prefix}_pass.tar.gz \
     --fail_output ~{filename_prefix}_fail.tar.gz --tempdir temp
     >>>
