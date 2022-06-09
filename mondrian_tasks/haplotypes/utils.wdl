@@ -16,7 +16,7 @@ task SplitBam{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        walltime: "~{select_first([walltime_override, 48])}:00"
         cpu: 1
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
@@ -85,7 +85,7 @@ task ExtractChromosomeSeqData{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
@@ -155,7 +155,7 @@ task InferHaps{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

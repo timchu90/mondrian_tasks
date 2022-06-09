@@ -8,6 +8,7 @@ task Genotyper{
         File vcf_file_idx
         File? cell_barcodes
         String? interval
+        Boolean? sparse = false
         Boolean? skip_header = false
         Boolean ignore_untagged_reads = false
         String filename_prefix = "snv_genotyping"
@@ -48,7 +49,7 @@ task Genotyper{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime:  "~{select_first([walltime_override, 24])}:00"
+        walltime:  "~{select_first([walltime_override, 6])}:00"
         cpu: "~{num_threads}"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
@@ -157,7 +158,7 @@ task RunVartrix{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime:  "~{select_first([walltime_override, 24])}:00"
+        walltime:  "~{select_first([walltime_override, 6])}:00"
         cpu: "~{num_threads}"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
