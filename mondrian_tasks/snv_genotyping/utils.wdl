@@ -25,7 +25,8 @@ task Genotyper{
             --targets_vcf ~{vcf_file} --output ~{filename_prefix}.csv.gz \
             ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
             ~{'--interval' + interval} \
-            ~{true='--skip_header' false='' skip_header}
+            ~{true='--skip_header' false='' skip_header} \
+            ~{true='--sparse' false='' sparse}
         else
             mkdir outdir
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
@@ -35,6 +36,7 @@ task Genotyper{
                     ~{'--interval' + interval}  --bam ~{bam}  ~{"--cell_barcodes "+cell_barcodes} \
                     ~{true='--ignore_untagged_reads' false='' ignore_untagged_reads} \
                     ~{true='--skip_header' false='' skip_header} \
+                    ~{true='--sparse' false='' sparse} \
                      --targets_vcf ~{vcf_file}  --output outdir/${interval}.genotype.csv.gz" >> commands.txt
                 done
             parallel --jobs ~{num_threads} < commands.txt
