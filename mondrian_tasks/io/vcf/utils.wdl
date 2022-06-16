@@ -90,3 +90,32 @@ task SplitVcf{
         singularity: '~{singularity_image}'
     }
 }
+
+
+task RemoveDuplicates{
+    input{
+        File input_vcf
+        Boolean? include_ref_alt
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        vcf_utils remove_duplicates --infile ~{input_vcf} --outfile unique_calls.vcf \
+        ~{true='--include_ref_alt' false='' include_ref_alt}
+        bgzip unique_calls.vcf
+        tabix unique_calls.vcf.gz
+    >>>
+    output{
+        File output_vcf = "unique_calls.vcf.gz"
+        File output_tbi = "unique_calls.vcf.gz.tbi"
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
