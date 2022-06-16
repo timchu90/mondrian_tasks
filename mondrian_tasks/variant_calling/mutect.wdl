@@ -324,9 +324,12 @@ task LearnReadOrientationModel {
 
     command {
         set -e
+
+        echo "-I ~{sep=" -I " f1r2_tar_gz}" > arguments_list
+
         gatk LearnReadOrientationModel \
-            -I ~{sep=" -I " f1r2_tar_gz} \
-            -O "artifact-priors.tar.gz"
+            --arguments_file arguments_list \
+            -O artifact-priors.tar.gz
     }
     output {
         File artifact_prior_table = "artifact-priors.tar.gz"
