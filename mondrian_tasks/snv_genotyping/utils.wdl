@@ -65,6 +65,10 @@ task SnvGenotypingMetadata{
         File output_csv_yaml
         File vartrix_output_csv
         File vartrix_output_csv_yaml
+        File vartrix_barcodes
+        File vartrix_variants
+        File vartrix_ref_matrix
+        File vartrix_alt_matrix
         File metadata_input
         String? singularity_image
         String? docker_image
@@ -75,6 +79,7 @@ task SnvGenotypingMetadata{
         snv_genotyping_utils generate_metadata \
         --outputs ~{output_csv} ~{output_csv_yaml} \
         --vartrix_outputs ~{vartrix_output_csv} ~{vartrix_output_csv_yaml} \
+        ~{vartrix_barcodes} ~{vartrix_variants} ~{vartrix_ref_matrix} ~{vartrix_alt_matrix} \
         --metadata_input ~{metadata_input} \
         --metadata_output metadata.yaml
     >>>
@@ -123,8 +128,6 @@ task RunVartrix{
         File fasta_fai
         File vcf_file
         File cell_barcodes
-        Boolean? skip_header = false
-        Boolean? sparse = false
         String? singularity_image
         String? docker_image
         Int? num_threads = 1
@@ -137,31 +140,70 @@ task RunVartrix{
          --cell-barcodes ~{cell_barcodes} \
         --scoring-method coverage \
         --out-barcodes out_snv_barcodes.txt \
-        --out-matrix out_snv_matrix.mtx \
+        --out-matrix out_snv_alt.mtx \
         --out-variants out_snv_variants.txt \
-        --ref-matrix out_snv_ref.txt \
+        --ref-matrix out_snv_ref.mtx \
         --mapq 20 \
         --no-duplicates \
         --primary-alignments \
         --threads ~{num_threads}
-
-        snv_genotyping_utils parse_vartrix \
-        --barcodes out_snv_barcodes.txt \
-        --variants out_snv_variants.txt  \
-        --ref_counts out_snv_ref.txt \
-        --alt_counts out_snv_matrix.mtx \
-        --outfile vartrix_parsed.csv.gz \
-        ~{true='--skip_header' false='' skip_header} \
-        ~{true='--sparse' false='' sparse}
     >>>
     output{
-        File outfile = "vartrix_parsed.csv.gz"
-        File outfile_yaml = "vartrix_parsed.csv.gz.yaml"
+        File barcodes = "out_snv_barcodes.txt"
+        File variants = "out_snv_variants.txt"
+        File ref_matrix = "out_snv_ref.mtx"
+        File alt_matrix = "out_snv_alt.mtx"
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
         walltime:  "~{select_first([walltime_override, 6])}:00"
         cpu: "~{num_threads}"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+task MergeVartrix{
+    input{
+        Array[File] barcodes
+        Array[File] variants
+        Array[File] ref_matrix
+        Array[File] alt_matrix
+        Array[File] vcf_files
+        Boolean? skip_header = false
+        Boolean? sparse = false
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        snv_genotyping_utils merge_vartrix \
+        --barcodes ~{sep=" " barcodes} \
+        --variants ~{sep=" " variants} \
+        --ref_matrices ~{sep=" " ref_matrix} \
+        --alt_matrices ~{sep=" " alt_matrix} \
+        --vcf_file ~{sep=" " vcf_files} \
+        --merged_barcodes barcodes.txt \
+        --merged_variants variants.txt \
+        --merged_ref_matrix ref_counts.mtx \
+        --merged_alt_matrix alt_counts.mtx \
+        --parsed_output vartrix_parsed.csv.gz \
+        --tempdir tempdir
+    >>>
+    output{
+        File merged_barcodes = 'barcodes.txt'
+        File merged_variants = 'variants.txt'
+        File merged_ref_matrix = 'ref_counts.mtx'
+        File merged_alt_matrix = 'alt_counts.mtx'
+        File parsed_outfile = 'vartrix_parsed.csv.gz'
+        File parsed_outfile_yaml = 'vartrix_parsed.csv.gz.yaml'
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 6])}:00"
+        cpu: "1"
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'
     }
