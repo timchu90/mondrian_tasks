@@ -131,7 +131,8 @@ task MergeVCFs {
     }
     command {
         set -e
-        gatk MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz
+        mkdir tempdir
+        gatk MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz --TMP_DIR tempdir
     }
     output {
         File merged_vcf = "merged.vcf.gz"
@@ -327,9 +328,12 @@ task LearnReadOrientationModel {
 
         echo "-I ~{sep=" -I " f1r2_tar_gz}" > arguments_list
 
+        mkdir tempdir
+
         gatk LearnReadOrientationModel \
             --arguments_file arguments_list \
-            -O artifact-priors.tar.gz
+            -O artifact-priors.tar.gz \
+            --tmp-dir tempdir
     }
     output {
         File artifact_prior_table = "artifact-priors.tar.gz"
