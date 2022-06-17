@@ -131,7 +131,7 @@ task MergeVCFs {
     }
     command {
         set -e
-        gatk --java-options "-Xmx4G" MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz
+        gatk MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz
     }
     output {
         File merged_vcf = "merged.vcf.gz"

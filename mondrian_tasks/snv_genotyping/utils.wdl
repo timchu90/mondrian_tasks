@@ -184,7 +184,7 @@ task MergeVartrix{
         --variants ~{sep=" " variants} \
         --ref_matrices ~{sep=" " ref_matrix} \
         --alt_matrices ~{sep=" " alt_matrix} \
-        --vcf_file ~{sep=" " vcf_files} \
+        --vcf_files ~{sep=" " vcf_files} \
         --merged_barcodes barcodes.txt \
         --merged_variants variants.txt \
         --merged_ref_matrix ref_counts.mtx \
