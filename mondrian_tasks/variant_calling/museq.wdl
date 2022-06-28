@@ -24,6 +24,7 @@ task RunMuseq{
         then
             museq normal:~{normal_bam} tumour:~{tumour_bam} reference:~{reference} \
             --out merged.vcf --log museq.log -v -i ~{interval}
+            if [ $? -ne 0 ]; then exit 1; fi
         else
             mkdir museq_vcf museq_log
             intervals=`variant_utils split_interval --interval ~{interval} --num_splits ~{num_threads}`
@@ -33,6 +34,7 @@ task RunMuseq{
                     --out museq_vcf/${interval}.vcf --log museq_log/${interval}.log -v -i ${interval} ">> museq_commands.txt
                 done
             parallel --jobs ~{num_threads} < museq_commands.txt
+            if [ $? -ne 0 ]; then exit 1; fi
             variant_utils merge_vcf_files --inputs museq_vcf/*vcf --output merged.vcf
         fi
 
@@ -41,6 +43,9 @@ task RunMuseq{
         bgzip merged.sorted.fixed.vcf -c > merged.sorted.fixed.vcf.gz
         bcftools index merged.sorted.fixed.vcf.gz
         tabix -f -p vcf merged.sorted.fixed.vcf.gz
+        if [ ! -f merged.sorted.fixed.vcf.gz ]; then exit 1; fi
+        if [ ! -f merged.sorted.fixed.vcf.gz.tbi ]; then exit 1; fi
+        if [ ! -f merged.sorted.fixed.vcf.gz.csi ]; then exit 1; fi
     >>>
 
     output{
