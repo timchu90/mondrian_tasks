@@ -125,13 +125,9 @@ task InferSnpGenotypeFromNormal{
 task InferHaps{
     input{
         File snp_genotype
-        File thousand_genomes_impute_tar
+        File thousand_genomes_tar
+        File snp_positions
         String chromosome
-        String genetic_map_filename_template
-        String haplotypes_filename_template
-        String legend_filename_template
-        String sample_filename
-        String phased_chromosome_x
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -140,15 +136,11 @@ task InferHaps{
     command<<<
         haplotype_utils infer_haps \
         --snp_genotype ~{snp_genotype} \
-        --thousand_genomes_impute_tar ~{thousand_genomes_impute_tar} \
+        --thousand_genomes_impute_tar ~{thousand_genomes_tar} \
         --output haplotypes.tsv \
         --chromosome ~{chromosome} \
         --tempdir tempdir \
-        --genetic_map_filename_template ~{genetic_map_filename_template} \
-        --haplotypes_filename_template ~{haplotypes_filename_template} \
-        --legend_filename_template ~{legend_filename_template} \
-        --sample_filename ~{sample_filename} \
-        --phased_chromosome_x ~{phased_chromosome_x}
+        --snp_positions ~{snp_positions}
     >>>
     output{
         File haplotypes = "haplotypes.tsv"
