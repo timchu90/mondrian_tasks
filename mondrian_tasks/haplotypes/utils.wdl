@@ -53,7 +53,7 @@ task ExtractSeqData{
         File seqdata = "output.h5"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
         docker: '~{docker_image}'
@@ -84,7 +84,7 @@ task ExtractChromosomeSeqData{
         File seqdata = "output.h5"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'
@@ -136,7 +136,7 @@ task InferHaps{
     command<<<
         haplotype_utils infer_haps \
         --snp_genotype ~{snp_genotype} \
-        --thousand_genomes_impute_tar ~{thousand_genomes_tar} \
+        --thousand_genomes_tar ~{thousand_genomes_tar} \
         --output haplotypes.tsv \
         --chromosome ~{chromosome} \
         --tempdir tempdir \
@@ -146,7 +146,7 @@ task InferHaps{
         File haplotypes = "haplotypes.tsv"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'
@@ -223,7 +223,7 @@ task AnnotateHaps{
         File outfile_yaml = "annotated.csv.gz.yaml"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime: "~{select_first([walltime_override, 6])}:00"
         cpu: 1
         docker: '~{docker_image}'
@@ -237,6 +237,7 @@ task CreateSegments{
     input{
         File reference_fai
         File gap_table
+        Array[String] chromosomes
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -246,6 +247,7 @@ task CreateSegments{
         haplotype_utils create_segments \
         --reference_fai ~{reference_fai} \
         --gap_table ~{gap_table} \
+        --chromosomes ~{sep=" "chromosomes} \
         --output output.tsv
     >>>
     output{
