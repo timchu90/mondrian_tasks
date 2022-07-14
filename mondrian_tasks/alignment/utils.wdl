@@ -273,3 +273,45 @@ task AlignmentMetadata{
         singularity: '~{singularity_image}'
     }
 }
+
+
+struct Lane{
+    File fastq1
+    File fastq2
+    String lane_id
+    String flowcell_id
+}
+
+
+struct Cell{
+    String cell_id
+    Array[Lane] lanes
+}
+
+
+task InputValidation{
+    input {
+        File metadata_yaml
+        Array[Cell] input_data
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command <<<
+        alignment_utils input_validation --meta_yaml ~{metadata_yaml} --input_data_json ~{write_json(input_data)} \
+        && cp ~{metadata_yaml} metadata.yaml
+    >>>
+    # this is just to force run this task first
+    output{
+        File metadata_yaml_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+
+}
