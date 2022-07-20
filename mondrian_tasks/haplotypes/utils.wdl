@@ -128,6 +128,7 @@ task InferHaps{
         File thousand_genomes_tar
         File snp_positions
         String chromosome
+        String? sex = 'female'
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -140,7 +141,8 @@ task InferHaps{
         --output haplotypes.tsv \
         --chromosome ~{chromosome} \
         --tempdir tempdir \
-        --snp_positions ~{snp_positions}
+        --snp_positions ~{snp_positions} \
+        --sex ~{sex}
     >>>
     output{
         File haplotypes = "haplotypes.tsv"
