@@ -34,11 +34,13 @@ task RunReadCounter{
 }
 
 
-task CorrectReadCount{
+task Hmmcopy{
     input{
-        File infile
+        File readcount_wig
         File gc_wig
         File map_wig
+        File reference
+        File reference_fai
         String map_cutoff
         String? singularity_image
         String? docker_image
@@ -46,40 +48,21 @@ task CorrectReadCount{
         Int? walltime_override
     }
     command<<<
-        hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
-        --map_cutoff ~{map_cutoff} --gc_wig_file ~{gc_wig} --map_wig_file ~{map_wig} \
-        --cell_id $(basename ~{infile} .wig)
-    >>>
-    output{
-        File wig = 'output.wig'
-    }
-    runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
-        cpu: 1
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task RunHmmcopy{
-    input{
-        File corrected_wig
-        String? singularity_image
-        String? docker_image
-        Int? memory_override
-        Int? walltime_override
-    }
-    command<<<
-    hmmcopy_utils run_hmmcopy \
-        --corrected_reads ~{corrected_wig} \
-        --tempdir output \
-        --reads reads.csv.gz \
+        hmmcopy_utils hmmcopy \
+        --readcount_wig ~{readcount_wig} \
+        --gc_wig_file ~{gc_wig} \
+        --map_wig_file ~{map_wig} \
         --metrics metrics.csv.gz \
         --params params.csv.gz \
+        --reads reads.csv.gz \
         --segments segments.csv.gz \
-        --output_tarball hmmcopy_data.tar.gz
+        --output_tarball hmmcopy_data.tar.gz \
+        --reference ~{reference} \
+        --segments_output segments.pdf \
+        --bias_output bias.pdf \
+        --cell_id $(basename ~{readcount_wig} .wig) \
+        --tempdir output \
+        --map_cutoff ~{map_cutoff}
     >>>
     output{
         File reads = 'reads.csv.gz'
@@ -91,39 +74,6 @@ task RunHmmcopy{
         File metrics = 'metrics.csv.gz'
         File metrics_yaml = 'metrics.csv.gz.yaml'
         File tarball = 'hmmcopy_data.tar.gz'
-    }
-    runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
-        cpu: 1
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task PlotHmmcopy{
-    input{
-        File segments
-        File segments_yaml
-        File reads
-        File reads_yaml
-        File params
-        File params_yaml
-        File metrics
-        File metrics_yaml
-        File reference
-        File reference_fai
-        String? singularity_image
-        String? docker_image
-        Int? memory_override
-        Int? walltime_override
-    }
-    command<<<
-        hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
-        --reference ~{reference} --segments_output segments.pdf --bias_output bias.pdf
-     >>>
-    output{
         File segments_pdf = 'segments.pdf'
         File segments_sample = 'segments.pdf.sample'
         File bias_pdf = 'bias.pdf'
@@ -136,7 +86,6 @@ task PlotHmmcopy{
         singularity: '~{singularity_image}'
     }
 }
-
 
 task PlotHeatmap{
     input{
