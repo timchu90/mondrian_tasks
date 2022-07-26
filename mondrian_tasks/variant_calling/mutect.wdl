@@ -330,7 +330,7 @@ task LearnReadOrientationModel {
 
         mkdir tempdir
 
-        gatk LearnReadOrientationModel \
+        gatk --java-options  "-Xmx7g" LearnReadOrientationModel \
             --arguments_file arguments_list \
             -O artifact-priors.tar.gz \
             --tmp-dir tempdir
