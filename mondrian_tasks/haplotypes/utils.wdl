@@ -23,11 +23,13 @@ task SplitBam{
     }
 }
 
-task ExtractSeqData{
+task ExtractSeqDataAndReadCount{
     input{
         File bam
         File? bai
         File snp_positions
+        File segments
+        File haplotypes
         Array[String] chromosomes
         String? singularity_image
         String? docker_image
@@ -42,15 +44,25 @@ task ExtractSeqData{
         cellid=$(basename ~{bam})
         cellid="${cellid%.*}"
 
+        mkdir -p readcount_temp seqdata_temp
+
         haplotype_utils extract_seqdata --bam ~{bam} \
         --snp_positions ~{snp_positions} \
-        --output output.h5 \
+        --output seqdata_temp/output.h5 \
         --tempdir seqdata_temp \
         --chromosomes ~{sep=" "chromosomes} \
         --cell_id $cellid
+
+        haplotype_utils haplotype_allele_readcount \
+        --seqdata seqdata_temp/output.h5 \
+        --segments ~{segments} \
+        --haplotypes ~{haplotypes} \
+        --output allele_counts.csv.gz \
+        --tempdir readcount_temp
     >>>
     output{
-        File seqdata = "output.h5"
+        File outfile = "allele_counts.csv.gz"
+        File outfile_yaml = "allele_counts.csv.gz.yaml"
     }
     runtime{
         memory: "~{select_first([memory_override, 14])} GB"
@@ -60,7 +72,6 @@ task ExtractSeqData{
         singularity: '~{singularity_image}'
     }
 }
-
 
 
 task ExtractChromosomeSeqData{
@@ -293,37 +304,6 @@ task ConvertHaplotypesCsvToTsv{
 
 
 
-task HaplotypeAlleleReadcount{
-    input{
-        File seqdata
-        File segments
-        File haplotypes
-        String? singularity_image
-        String? docker_image
-        Int? memory_override
-        Int? walltime_override
-    }
-    command<<<
-        mkdir -p temp
-        haplotype_utils haplotype_allele_readcount \
-        --seqdata ~{seqdata} \
-        --segments ~{segments} \
-        --haplotypes ~{haplotypes} \
-        --output allele_counts.csv.gz \
-        --tempdir temp
-    >>>
-    output{
-        File outfile = "allele_counts.csv.gz"
-        File outfile_yaml = "allele_counts.csv.gz.yaml"
-    }
-    runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
-        cpu: 1
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
 
 task HaplotypesMetadata{
     input{
