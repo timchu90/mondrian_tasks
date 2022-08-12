@@ -31,6 +31,7 @@ task ExtractSeqDataAndReadCount{
         File segments
         File haplotypes
         Array[String] chromosomes
+        Boolean? skip_header = false
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -58,7 +59,8 @@ task ExtractSeqDataAndReadCount{
         --segments ~{segments} \
         --haplotypes ~{haplotypes} \
         --output allele_counts.csv.gz \
-        --tempdir readcount_temp
+        --tempdir readcount_temp \
+        ~{true='--skip_header' false='' skip_header} \
     >>>
     output{
         File outfile = "allele_counts.csv.gz"
