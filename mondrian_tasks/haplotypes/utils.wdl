@@ -223,6 +223,7 @@ task AnnotateHaps{
     input{
         File infile
         File thousand_genomes_snps
+        String filename_prefix = "annotate_haps"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -231,11 +232,11 @@ task AnnotateHaps{
     command<<<
         haplotype_utils annotate_haps --input ~{infile} \
         --thousand_genomes ~{thousand_genomes_snps} \
-        --output annotated.csv.gz --tempdir tmpdir
+        --output ~{filename_prefix}.csv.gz --tempdir tmpdir
     >>>
     output{
-        File outfile = "annotated.csv.gz"
-        File outfile_yaml = "annotated.csv.gz.yaml"
+        File outfile = "~{filename_prefix}.csv.gz"
+        File outfile_yaml = "~{filename_prefix}.csv.gz.yaml"
     }
     runtime{
         memory: "~{select_first([memory_override, 24])} GB"

@@ -173,6 +173,7 @@ task MergeVartrix{
         Array[File] vcf_files
         Boolean? skip_header = false
         Boolean? sparse = false
+        String? filename_prefix = "vartrix"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -185,20 +186,20 @@ task MergeVartrix{
         --ref_matrices ~{sep=" " ref_matrix} \
         --alt_matrices ~{sep=" " alt_matrix} \
         --vcf_files ~{sep=" " vcf_files} \
-        --merged_barcodes barcodes.txt \
-        --merged_variants variants.txt \
-        --merged_ref_matrix ref_counts.mtx \
-        --merged_alt_matrix alt_counts.mtx \
-        --parsed_output vartrix_parsed.csv.gz \
+        --merged_barcodes ~{filename_prefix}_barcodes.txt \
+        --merged_variants ~{filename_prefix}_variants.txt \
+        --merged_ref_matrix ~{filename_prefix}_ref_counts.mtx \
+        --merged_alt_matrix ~{filename_prefix}_alt_counts.mtx \
+        --parsed_output ~{filename_prefix}_vartrix_parsed.csv.gz \
         --tempdir tempdir
     >>>
     output{
-        File merged_barcodes = 'barcodes.txt'
-        File merged_variants = 'variants.txt'
-        File merged_ref_matrix = 'ref_counts.mtx'
-        File merged_alt_matrix = 'alt_counts.mtx'
-        File parsed_outfile = 'vartrix_parsed.csv.gz'
-        File parsed_outfile_yaml = 'vartrix_parsed.csv.gz.yaml'
+        File merged_barcodes = '~{filename_prefix}_barcodes.txt'
+        File merged_variants = '~{filename_prefix}_variants.txt'
+        File merged_ref_matrix = '~{filename_prefix}_ref_counts.mtx'
+        File merged_alt_matrix = '~{filename_prefix}_alt_counts.mtx'
+        File parsed_outfile = '~{filename_prefix}_vartrix_parsed.csv.gz'
+        File parsed_outfile_yaml = '~{filename_prefix}_vartrix_parsed.csv.gz.yaml'
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
