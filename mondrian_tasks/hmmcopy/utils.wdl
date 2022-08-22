@@ -94,7 +94,7 @@ task PlotHeatmap{
         File metrics
         File metrics_yaml
         Array[String] chromosomes
-        String filename_prefix = "heatmap"
+        String? filename_prefix = "heatmap"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -121,7 +121,7 @@ task AddMappability{
     input{
         File infile
         File infile_yaml
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -186,7 +186,7 @@ task AddQuality{
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -214,7 +214,7 @@ task CreateSegmentsTar{
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -247,7 +247,7 @@ task GenerateHtmlReport{
         File metrics_yaml
         File gc_metrics
         File gc_metrics_yaml
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -279,7 +279,7 @@ task AddClusteringOrder{
         File reads
         File reads_yaml
         Array[String] chromosomes
-        String filename_prefix = "added_clustering_order"
+        String? filename_prefix = "added_clustering_order"
         String? singularity_image
         String? docker_image
         Int? memory_override

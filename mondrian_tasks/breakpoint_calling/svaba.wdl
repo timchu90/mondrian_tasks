@@ -14,7 +14,7 @@ task RunSvaba{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? num_threads = 8

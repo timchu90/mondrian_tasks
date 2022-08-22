@@ -72,7 +72,7 @@ task UpdateMafCounts{
     input{
         File input_maf
         File input_counts
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -98,7 +98,7 @@ task UpdateMafCounts{
 task MergeMafs{
     input{
         Array[File] input_mafs
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override

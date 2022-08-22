@@ -34,7 +34,7 @@ task LumpyExpress{
         File tumourDiscBam
         File normal_bam
         File tumour_bam
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override

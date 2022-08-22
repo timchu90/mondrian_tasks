@@ -3,7 +3,7 @@ version 1.0
 task TarFiles{
     input{
         Array[File] inputs
-        String filename_prefix = "output"
+        String? filename_prefix = "output"
         String? singularity_image
         String? docker_image
         Int? memory_override

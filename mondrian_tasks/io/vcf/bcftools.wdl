@@ -36,7 +36,7 @@ task MergeVcf{
         Array[File] vcf_files
         Array[File] csi_files
         Array[File] tbi_files
-        String filename_prefix = 'merged_sorted'
+        String? filename_prefix = 'merged_sorted'
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -102,7 +102,7 @@ task FilterVcf{
 task FinalizeVcf{
     input{
         File vcf_file
-        String filename_prefix
+        String? filename_prefix
         String? singularity_image
         String? docker_image
         Int? memory_override

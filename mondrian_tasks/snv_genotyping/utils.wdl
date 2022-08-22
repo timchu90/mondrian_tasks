@@ -11,7 +11,7 @@ task Genotyper{
         Boolean? sparse = false
         Boolean? skip_header = false
         Boolean ignore_untagged_reads = false
-        String filename_prefix = "snv_genotyping"
+        String? filename_prefix = "snv_genotyping"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8

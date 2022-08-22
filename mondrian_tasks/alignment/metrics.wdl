@@ -71,7 +71,7 @@ task CoverageMetrics{
     input{
         File bamfile
         File bamfile_bai
-        String filename_prefix="output"
+        String? filename_prefix="output"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -99,7 +99,7 @@ task AddMetadata{
         File metrics
         File metrics_yaml
         File metadata_yaml
-        String filename_prefix="output"
+        String? filename_prefix="output"
         String? singularity_image
         String? docker_image
         Int? memory_override

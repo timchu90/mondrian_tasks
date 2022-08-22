@@ -223,7 +223,7 @@ task AnnotateHaps{
     input{
         File infile
         File thousand_genomes_snps
-        String filename_prefix = "annotate_haps"
+        String? filename_prefix = "annotate_haps"
         String? singularity_image
         String? docker_image
         Int? memory_override
