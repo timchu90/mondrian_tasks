@@ -46,15 +46,15 @@ task RunVcf2Maf{
 task UpdateMafId{
     input{
         File input_maf
-        String normal_id
-        String tumour_id
+        File tumour_bam
+        File normal_bam
         String? singularity_image
         String? docker_image
         Int? memory_override
         Int? walltime_override
     }
     command<<<
-        variant_utils update_maf_ids --input ~{input_maf} --tumour_id ~{tumour_id} --normal_id ~{normal_id} --output updated_id.maf
+        variant_utils update_maf_ids --input ~{input_maf} --tumour_bam ~{tumour_bam} --normal_bam ~{normal_bam} --output updated_id.maf
     >>>
     output{
         File output_maf = 'updated_id.maf'
