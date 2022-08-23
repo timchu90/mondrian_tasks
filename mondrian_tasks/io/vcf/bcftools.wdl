@@ -102,7 +102,7 @@ task FilterVcf{
 task FinalizeVcf{
     input{
         File vcf_file
-        String? filename_prefix
+        String? filename_prefix = 'finalize_vcf'
         String? singularity_image
         String? docker_image
         Int? memory_override

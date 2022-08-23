@@ -145,7 +145,7 @@ task BamMerge{
         Array[String] cell_ids
         File metrics
         File metrics_yaml
-        String? filename_prefix
+        String? filename_prefix = "merge"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
@@ -209,7 +209,7 @@ task ClassifyFastqscreen{
         File training_data
         File metrics
         File metrics_yaml
-        String? filename_prefix
+        String? filename_prefix = "fastqscreen"
         String? singularity_image
         String? docker_image
         Int? memory_override

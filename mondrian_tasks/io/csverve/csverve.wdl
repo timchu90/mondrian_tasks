@@ -32,7 +32,7 @@ task ConcatenateCsv {
         Array[File] inputfile
         Array[File] inputyaml
         Boolean drop_duplicates = false
-        String? filename_prefix = 'output'
+        String? filename_prefix = 'concat_csv'
         String? singularity_image
         String? docker_image
         Int? memory_override

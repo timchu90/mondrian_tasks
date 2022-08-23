@@ -17,7 +17,7 @@ task RunDestruct{
         File reference_fa_rev_2_ebwt
         File dgv
         File repeats_satellite_regions
-        String? filename_prefix
+        String? filename_prefix = "destruct"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8

@@ -5,7 +5,7 @@ version 1.0
 task MergePdf{
     input{
         Array[File] infiles
-        String? filename_prefix
+        String? filename_prefix = "merge_pdf"
         String? singularity_image
         String? docker_image
         Int? memory_override

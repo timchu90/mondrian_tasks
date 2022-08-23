@@ -121,7 +121,7 @@ task AddMappability{
     input{
         File infile
         File infile_yaml
-        String? filename_prefix
+        String? filename_prefix = "mappabilitty"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -186,7 +186,7 @@ task AddQuality{
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
-        String? filename_prefix
+        String? filename_prefix = "quality_classifier"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -214,7 +214,7 @@ task CreateSegmentsTar{
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
-        String? filename_prefix
+        String? filename_prefix = "segments_pdf_tar"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -247,7 +247,7 @@ task GenerateHtmlReport{
         File metrics_yaml
         File gc_metrics
         File gc_metrics_yaml
-        String? filename_prefix
+        String? filename_prefix = "html_report"
         String? singularity_image
         String? docker_image
         Int? memory_override
