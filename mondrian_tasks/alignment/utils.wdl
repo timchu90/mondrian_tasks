@@ -32,6 +32,7 @@ task AlignPostprocessAllLanes{
         Int min_mqual=20
         Int min_bqual=20
         Boolean count_unpaired=false
+        Boolean? run_fastq = false
         Int? num_threads
         String? singularity_image
         String? docker_image
@@ -58,7 +59,8 @@ task AlignPostprocessAllLanes{
         --fastqscreen_detailed_output detailed_fastqscreen.csv.gz \
         --fastqscreen_summary_output summary_fastqscreen.csv.gz \
         --tar_output ~{cell_id}.tar.gz \
-        --num_threads ~{num_threads}
+        --num_threads ~{num_threads} \
+        ~{true='--run_fastq' false='' run_fastq}
     }
     output {
         File bam = "aligned.bam"
