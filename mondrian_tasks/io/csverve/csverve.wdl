@@ -39,7 +39,7 @@ task ConcatenateCsv {
         Int? walltime_override
     }
     command {
-        csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz --write_header \
+        csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz \
         ~{true='--drop_duplicates' false='' drop_duplicates}
     }
     output {
@@ -68,7 +68,7 @@ task MergeCsv{
         Int? walltime_override
     }
     command<<<
-        csverve merge --in_f ~{sep=" --in_f " inputfiles} --out_f merged.csv.gz --on ~{on} --how ~{how} --write_header
+        csverve merge --in_f ~{sep=" --in_f " inputfiles} --out_f merged.csv.gz --on ~{on} --how ~{how}
     >>>
     output{
         File outfile = "merged.csv.gz"
@@ -94,7 +94,7 @@ task FinalizeCsv {
         Int? walltime_override
     }
     command {
-        variant_utils concat_csv  --inputs ~{sep=" " inputfile} --output concat.csv --write_header
+        variant_utils concat_csv  --inputs ~{sep=" " inputfile} --output concat.csv
 
     }
     output {
@@ -127,8 +127,7 @@ task AnnotateCsv {
          --out_f annotated.csv.gz \
          --col_name ~{col_name} \
          --col_val ~{col_val} \
-         --col_dtype ~{col_dtype} \
-         --write_header
+         --col_dtype ~{col_dtype}
     }
     output {
         File outfile = "annotated.csv.gz"

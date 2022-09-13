@@ -42,7 +42,7 @@ task Genotyper{
             parallel --jobs ~{num_threads} < commands.txt
 
             inputs=`echo outdir/*genotype.csv.gz | sed "s/ / --in_f /g"`
-            csverve concat --in_f $inputs  --out_f ~{filename_prefix}.csv.gz --write_header
+            csverve concat --in_f $inputs  --out_f ~{filename_prefix}.csv.gz
         fi
     >>>
     output{
