@@ -145,6 +145,7 @@ task BamMerge{
     input{
         Array[File] input_bams
         Array[String] cell_ids
+        File reference
         File metrics
         File metrics_yaml
         String? filename_prefix = "merge"
@@ -158,15 +159,19 @@ task BamMerge{
         alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
         --tempdir temp --ncores ~{num_threads} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
         --control_outfile ~{filename_prefix}_control.bam \
-        --pass_outfile ~{filename_prefix}.bam
+        --pass_outfile ~{filename_prefix}.bam \
+        --reference ~{reference}
     >>>
     output{
         File pass_outfile = "~{filename_prefix}.bam"
         File pass_outfile_bai = "~{filename_prefix}.bam.bai"
+        File pass_outfile_tdf = "~{filename_prefix}.bam.tdf"
         File contaminated_outfile = "~{filename_prefix}_contaminated.bam"
         File contaminated_outfile_bai = "~{filename_prefix}_contaminated.bam.bai"
+        File contaminated_outfile_tdf = "~{filename_prefix}_contaminated.bam.tdf"
         File control_outfile = "~{filename_prefix}_control.bam"
         File control_outfile_bai = "~{filename_prefix}_control.bam.bai"
+        File control_outfile_tdf = "~{filename_prefix}_control.bam.tdf"
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
@@ -177,7 +182,6 @@ task BamMerge{
         disks: "local-disk " + length(input_bams) + " HDD"
     }
 }
-
 
 task AddContaminationStatus{
     input{
