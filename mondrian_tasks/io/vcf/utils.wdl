@@ -119,3 +119,32 @@ task RemoveDuplicates{
         singularity: '~{singularity_image}'
     }
 }
+
+
+
+task MergeVcfs{
+    input{
+        Array[File] input_vcf
+        Array[File] input_vcf_idx
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        vcf_utils merge_vcfs --infiles ~{sep=" "input_vcf}  --outfile output.vcf
+        bgzip output.vcf
+        tabix output.vcf.gz
+    >>>
+    output{
+        File output_vcf = "output.vcf.gz"
+        File output_tbi = "output.vcf.gz.tbi"
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 14])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
