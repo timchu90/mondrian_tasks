@@ -30,13 +30,14 @@ task IdentifyNormalCells{
         File hmmcopy_reads_yaml
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
+        String reference_name
         String? singularity_image
         String? docker_image
         Int? memory_override
         Int? walltime_override
     }
     command<<<
-        bam_utils identify_normal_cells --reads_data ~{hmmcopy_reads} --metrics_data ~{hmmcopy_metrics} --output_yaml normals.yaml
+        bam_utils identify_normal_cells --reads_data ~{hmmcopy_reads} --metrics_data ~{hmmcopy_metrics} --output_yaml normals.yaml --reference_name ~{reference_name}
     >>>
     output{
         File normal_cells_yaml = 'normals.yaml'
