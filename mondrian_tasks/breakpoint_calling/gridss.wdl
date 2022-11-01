@@ -12,6 +12,7 @@ task RunGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
+        Int? jvm_heap_gb = 10
         String? filename_prefix = "gridsss"
         String? singularity_image
         String? docker_image
@@ -26,7 +27,7 @@ task RunGridss{
         --output ~{filename_prefix}_gridss.vcf.gz \
         --threads ~{num_threads} \
         --workingdir workingdir \
-        --jvmheap 20g \
+        --jvmheap ~{jvm_heap_gb}g \
         --steps All \
         --labels tumour,normal ~{tumour_bam} ~{normal_bam}
     }
