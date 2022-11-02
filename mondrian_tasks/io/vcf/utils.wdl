@@ -74,6 +74,8 @@ task SplitVcf{
         Int? walltime_override
     }
     command<<<
+        ulimit -s 65536
+
         vcf_utils split_vcf --infile ~{input_vcf} --num_splits ~{num_splits} --outdir temp_output
 
         ls temp_output|while read x; do bgzip temp_output/${x} && tabix temp_output/${x}.gz;done
