@@ -330,7 +330,7 @@ task LearnReadOrientationModel {
 
         mkdir tempdir
 
-        gatk --java-options  "-Xmx7g" LearnReadOrientationModel \
+        gatk LearnReadOrientationModel \
             --arguments_file arguments_list \
             -O artifact-priors.tar.gz \
             --tmp-dir tempdir
@@ -339,7 +339,7 @@ task LearnReadOrientationModel {
         File artifact_prior_table = "artifact-priors.tar.gz"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'

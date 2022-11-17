@@ -30,7 +30,7 @@ task RunVcf2Maf{
         File maf = 'annotated.maf'
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 20])} GB"
         walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'

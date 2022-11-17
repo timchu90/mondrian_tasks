@@ -26,6 +26,34 @@ task RewriteCsv{
     }
 }
 
+task RemoveDuplicates{
+    input{
+        File inputfile
+        File inputyaml
+        String? filename_prefix = 'remove_duplicates'
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        csverve remove-duplicates --in_f ~{inputfile} --out_f ~{filename_prefix}.csv.gz
+    >>>
+    output{
+        File outfile = '~{filename_prefix}.csv.gz'
+        File outfile_yaml = '~{filename_prefix}.csv.gz.yaml'
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+
 
 task ConcatenateCsv {
     input {

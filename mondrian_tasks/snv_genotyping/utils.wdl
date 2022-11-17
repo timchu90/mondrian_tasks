@@ -186,23 +186,51 @@ task MergeVartrix{
         --ref_matrices ~{sep=" " ref_matrix} \
         --alt_matrices ~{sep=" " alt_matrix} \
         --vcf_files ~{sep=" " vcf_files} \
-        --merged_barcodes ~{filename_prefix}_barcodes.txt \
-        --merged_variants ~{filename_prefix}_variants.txt \
-        --merged_ref_matrix ~{filename_prefix}_ref_counts.mtx \
-        --merged_alt_matrix ~{filename_prefix}_alt_counts.mtx \
         --parsed_output ~{filename_prefix}_vartrix_parsed.csv.gz \
         --tempdir tempdir
     >>>
     output{
-        File merged_barcodes = '~{filename_prefix}_barcodes.txt'
-        File merged_variants = '~{filename_prefix}_variants.txt'
-        File merged_ref_matrix = '~{filename_prefix}_ref_counts.mtx'
-        File merged_alt_matrix = '~{filename_prefix}_alt_counts.mtx'
         File parsed_outfile = '~{filename_prefix}_vartrix_parsed.csv.gz'
         File parsed_outfile_yaml = '~{filename_prefix}_vartrix_parsed.csv.gz.yaml'
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
+        walltime:  "~{select_first([walltime_override, 6])}:00"
+        cpu: "1"
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+
+task RegenerateVartrixOutputs{
+    input{
+        File parsed_vartrix_data
+        File parsed_vartrix_data_yaml
+        String? filename_prefix = "vartrix"
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        snv_genotyping_utils regenerate_vartrix_format \
+        --barcodes ~{filename_prefix}_barcodes.txt \
+        --variants ~{filename_prefix}_variants.txt \
+        --ref_matrix ~{filename_prefix}_ref_counts.mtx \
+        --alt_matrix ~{filename_prefix}_alt_counts.mtx \
+        --parsed_data ~{parsed_vartrix_data} \
+        --tempdir tempdir
+    >>>
+    output{
+        File barcodes = '~{filename_prefix}_barcodes.txt'
+        File variants = '~{filename_prefix}_variants.txt'
+        File ref_matrix = '~{filename_prefix}_ref_counts.mtx'
+        File alt_matrix = '~{filename_prefix}_alt_counts.mtx'
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime:  "~{select_first([walltime_override, 6])}:00"
         cpu: "1"
         docker: '~{docker_image}'

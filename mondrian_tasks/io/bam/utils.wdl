@@ -31,16 +31,27 @@ task IdentifyNormalCells{
         File hmmcopy_metrics
         File hmmcopy_metrics_yaml
         String reference_name
+        Float? relative_aneuploidy_threshold = 0.05
+        Float? ploidy_threshold = 2.5
+        Float? allowed_aneuploidy_score = 0.0
+        String? filename_prefix = "separate_normal_and_tumour"
         String? singularity_image
         String? docker_image
         Int? memory_override
         Int? walltime_override
     }
     command<<<
-        bam_utils identify_normal_cells --reads_data ~{hmmcopy_reads} --metrics_data ~{hmmcopy_metrics} --output_yaml normals.yaml --reference_name ~{reference_name}
+        bam_utils identify_normal_cells \
+        --reads_data ~{hmmcopy_reads} \
+        --metrics_data ~{hmmcopy_metrics} \
+        --output_yaml ~{filename_prefix}_normals.yaml \
+        --reference_name ~{reference_name} \
+        --relative_aneuploidy_threshold ~{relative_aneuploidy_threshold} \
+        --ploidy_threshold ~{ploidy_threshold} \
+        --allowed_aneuploidy_score ~{allowed_aneuploidy_score}
     >>>
     output{
-        File normal_cells_yaml = 'normals.yaml'
+        File normal_cells_yaml = '~{filename_prefix}_normals.yaml'
     }
     runtime{
         memory: "~{select_first([memory_override, 20])} GB"

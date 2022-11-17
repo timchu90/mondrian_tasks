@@ -74,9 +74,34 @@ task SplitVcf{
         Int? walltime_override
     }
     command<<<
-        ulimit -s 65536
-
         vcf_utils split_vcf --infile ~{input_vcf} --num_splits ~{num_splits} --outdir temp_output
+
+        ls temp_output|while read x; do bgzip temp_output/${x} && tabix temp_output/${x}.gz;done
+    >>>
+    output{
+        Array[File] output_vcf = glob("temp_output/*.vcf.gz")
+        Array[File] output_tbi = glob("temp_output/*.vcf.gz.tbi")
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
+
+
+task SplitVcfByChrom{
+    input{
+        File input_vcf
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        vcf_utils split_vcf_by_chrom --infile ~{input_vcf} --outdir temp_output
 
         ls temp_output|while read x; do bgzip temp_output/${x} && tabix temp_output/${x}.gz;done
     >>>
@@ -122,6 +147,33 @@ task RemoveDuplicates{
     }
 }
 
+task ExcludeBlacklistCalls{
+    input{
+        File input_vcf
+        File? exclusion_blacklist
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command<<<
+        vcf_utils exclude_blacklist --infile ~{input_vcf} --outfile whitelist_calls.vcf \
+        --exclusion_blacklist ~{exclusion_blacklist}
+        bgzip whitelist_calls.vcf
+        tabix whitelist_calls.vcf.gz
+    >>>
+    output{
+        File output_vcf = "whitelist_calls.vcf.gz"
+        File output_tbi = "whitelist_calls.vcf.gz.tbi"
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+}
 
 
 task MergeVcfs{
