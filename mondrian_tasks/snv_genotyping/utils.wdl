@@ -152,9 +152,9 @@ task RunVartrix{
 
         snv_genotyping_utils parse_vartrix \
         --barcode out_snv_barcodes.txt \
-        --variants out_snv_variants.txt \
-        --ref_matrices out_snv_ref.mtx \
-        --alt_matrices out_snv_alt.mtx \
+        --variant out_snv_variants.txt \
+        --ref_matrix out_snv_ref.mtx \
+        --alt_matrix out_snv_alt.mtx \
         --vcf_files ~{vcf_file} \
         --parsed_output ~{filename_prefix}_vartrix_parsed.csv.gz \
         --tempdir tempdir \
