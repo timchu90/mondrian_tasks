@@ -128,6 +128,8 @@ task RunVartrix{
         File fasta_fai
         File vcf_file
         File cell_barcodes
+        String? filename_prefix = "vartrix"
+        Boolean? skip_header = false
         String? singularity_image
         String? docker_image
         Int? num_threads = 1
@@ -147,12 +149,21 @@ task RunVartrix{
         --no-duplicates \
         --primary-alignments \
         --threads ~{num_threads}
+
+        snv_genotyping_utils parse_vartrix \
+        --barcode out_snv_barcodes.txt \
+        --variants out_snv_variants.txt \
+        --ref_matrices out_snv_ref.mtx \
+        --alt_matrices out_snv_alt.mtx \
+        --vcf_files ~{vcf_file} \
+        --parsed_output ~{filename_prefix}_vartrix_parsed.csv.gz \
+        --tempdir tempdir \
+        ~{true='--skip_header' false='' skip_header}
+
     >>>
     output{
-        File barcodes = "out_snv_barcodes.txt"
-        File variants = "out_snv_variants.txt"
-        File ref_matrix = "out_snv_ref.mtx"
-        File alt_matrix = "out_snv_alt.mtx"
+        File output_csv = "~{filename_prefix}_vartrix_parsed.csv.gz"
+        File output_yaml = "~{filename_prefix}_vartrix_parsed.csv.gz.yaml"
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
@@ -201,7 +212,6 @@ task MergeVartrix{
         singularity: '~{singularity_image}'
     }
 }
-
 
 
 task RegenerateVartrixOutputs{
