@@ -155,7 +155,7 @@ task RunVartrix{
         --variant out_snv_variants.txt \
         --ref_matrix out_snv_ref.mtx \
         --alt_matrix out_snv_alt.mtx \
-        --vcf_files ~{vcf_file} \
+        --vcf_file ~{vcf_file} \
         --parsed_output ~{filename_prefix}_vartrix_parsed.csv.gz \
         --tempdir tempdir \
         ~{true='--skip_header' false='' skip_header}
