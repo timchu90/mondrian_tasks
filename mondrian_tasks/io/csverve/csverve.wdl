@@ -60,6 +60,7 @@ task ConcatenateCsv {
         Array[File] inputfile
         Array[File] inputyaml
         Boolean drop_duplicates = false
+        Boolean skip_header = false
         String? filename_prefix = 'concat_csv'
         String? singularity_image
         String? docker_image
@@ -68,7 +69,8 @@ task ConcatenateCsv {
     }
     command {
         csverve concat --in_f ~{sep=" --in_f " inputfile} --out_f ~{filename_prefix}.csv.gz \
-        ~{true='--drop_duplicates' false='' drop_duplicates}
+        ~{true='--drop_duplicates' false='' drop_duplicates} \
+        ~{true='--skip_header' false='' skip_header} \
     }
     output {
         File outfile = "~{filename_prefix}.csv.gz"

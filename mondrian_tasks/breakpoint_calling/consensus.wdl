@@ -8,13 +8,13 @@ task Consensus{
         File gridss
         String? filename_prefix = "breakpoint_consensus"
         String sample_id
-        String? chromosome
+        String? region
         String? singularity_image
         String? docker_image
         Int? memory_override
         Int? walltime_override
     }
-    String chromosome_str = if defined(chromosome) then '--chromosome ~{chromosome}' else ''
+    String region_str = if defined(region) then '--region ~{region}' else ''
     command<<<
         mkdir tempdir
         breakpoint_utils consensus \
@@ -22,7 +22,7 @@ task Consensus{
         --lumpy ~{lumpy} --svaba ~{svaba} \
         --gridss ~{gridss} --consensus ~{filename_prefix}_consensus.csv.gz --sample_id ~{sample_id} \
         --tempdir tempdir \
-        ~{chromosome_str}
+        ~{region_str}
     >>>
     output{
         File consensus = "~{filename_prefix}_consensus.csv.gz"
