@@ -12,7 +12,8 @@ task RunGridss{
         File reference_fa_bwt
         File reference_fa_pac
         File reference_fa_sa
-        String filename_prefix
+        Int? jvm_heap_gb = 10
+        String? filename_prefix = "gridsss"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
@@ -26,7 +27,7 @@ task RunGridss{
         --output ~{filename_prefix}_gridss.vcf.gz \
         --threads ~{num_threads} \
         --workingdir workingdir \
-        --jvmheap 10g \
+        --jvmheap ~{jvm_heap_gb}g \
         --steps All \
         --labels tumour,normal ~{tumour_bam} ~{normal_bam}
     }
@@ -35,7 +36,7 @@ task RunGridss{
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        walltime: "~{select_first([walltime_override, 96])}:00"
         cpu: num_threads
         docker: '~{docker_image}'
         singularity: '~{singularity_image}'

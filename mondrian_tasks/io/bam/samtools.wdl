@@ -53,7 +53,7 @@ task IndexBam{
 task Flagstat{
     input{
         File input_bam
-        String filename_prefix = "output"
+        String? filename_prefix = "flagstat"
         String? singularity_image
         String? docker_image
         Int? memory_override

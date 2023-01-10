@@ -27,8 +27,8 @@ task RunReadCounter{
         Array[File] wigs = glob('output*/*.wig')
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
+        memory: "~{select_first([memory_override, 10])} GB"
+        walltime: "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         preemptible: 0
         disks: 'local-disk ' + diskSize + ' HDD'
@@ -38,11 +38,13 @@ task RunReadCounter{
 }
 
 
-task CorrectReadCount{
+task Hmmcopy{
     input{
-        File infile
+        File readcount_wig
         File gc_wig
         File map_wig
+        File reference
+        File reference_fai
         String map_cutoff
         String? singularity_image
         String? docker_image
@@ -50,40 +52,21 @@ task CorrectReadCount{
         Int? walltime_override
     }
     command<<<
-        hmmcopy_utils correct_readcount --infile ~{infile} --outfile output.wig \
-        --map_cutoff ~{map_cutoff} --gc_wig_file ~{gc_wig} --map_wig_file ~{map_wig} \
-        --cell_id $(basename ~{infile} .wig)
-    >>>
-    output{
-        File wig = 'output.wig'
-    }
-    runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
-        cpu: 1
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task RunHmmcopy{
-    input{
-        File corrected_wig
-        String? singularity_image
-        String? docker_image
-        Int? memory_override
-        Int? walltime_override
-    }
-    command<<<
-    hmmcopy_utils run_hmmcopy \
-        --corrected_reads ~{corrected_wig} \
-        --tempdir output \
-        --reads reads.csv.gz \
+        hmmcopy_utils hmmcopy \
+        --readcount_wig ~{readcount_wig} \
+        --gc_wig_file ~{gc_wig} \
+        --map_wig_file ~{map_wig} \
         --metrics metrics.csv.gz \
         --params params.csv.gz \
+        --reads reads.csv.gz \
         --segments segments.csv.gz \
-        --output_tarball hmmcopy_data.tar.gz
+        --output_tarball hmmcopy_data.tar.gz \
+        --reference ~{reference} \
+        --segments_output segments.pdf \
+        --bias_output bias.pdf \
+        --cell_id $(basename ~{readcount_wig} .wig) \
+        --tempdir output \
+        --map_cutoff ~{map_cutoff}
     >>>
     output{
         File reads = 'reads.csv.gz'
@@ -95,39 +78,6 @@ task RunHmmcopy{
         File metrics = 'metrics.csv.gz'
         File metrics_yaml = 'metrics.csv.gz.yaml'
         File tarball = 'hmmcopy_data.tar.gz'
-    }
-    runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
-        walltime: "~{select_first([walltime_override, 6])}:00"
-        cpu: 1
-        docker: '~{docker_image}'
-        singularity: '~{singularity_image}'
-    }
-}
-
-
-task PlotHmmcopy{
-    input{
-        File segments
-        File segments_yaml
-        File reads
-        File reads_yaml
-        File params
-        File params_yaml
-        File metrics
-        File metrics_yaml
-        File reference
-        File reference_fai
-        String? singularity_image
-        String? docker_image
-        Int? memory_override
-        Int? walltime_override
-    }
-    command<<<
-        hmmcopy_utils plot_hmmcopy --reads ~{reads} --segments ~{segments} --params ~{params} --metrics ~{metrics} \
-        --reference ~{reference} --segments_output segments.pdf --bias_output bias.pdf
-     >>>
-    output{
         File segments_pdf = 'segments.pdf'
         File segments_sample = 'segments.pdf.sample'
         File bias_pdf = 'bias.pdf'
@@ -141,7 +91,6 @@ task PlotHmmcopy{
     }
 }
 
-
 task PlotHeatmap{
     input{
         File reads
@@ -149,7 +98,7 @@ task PlotHeatmap{
         File metrics
         File metrics_yaml
         Array[String] chromosomes
-        String filename_prefix = "heatmap"
+        String? filename_prefix = "heatmap"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -176,7 +125,7 @@ task AddMappability{
     input{
         File infile
         File infile_yaml
-        String filename_prefix
+        String? filename_prefix = "mappabilitty"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -215,9 +164,9 @@ task CellCycleClassifier{
 
     echo "is_s_phase: bool" > dtypes.yaml
     echo "is_s_phase_prob: float" >> dtypes.yaml
-    echo "cell_id: str" >> dtypes.yaml
+    echo "cell_id: category" >> dtypes.yaml
 
-    csverve rewrite --in_f output.csv.gz --out_f rewrite.csv.gz --dtypes dtypes.yaml --write_header
+    csverve rewrite --in_f output.csv.gz --out_f rewrite.csv.gz --dtypes dtypes.yaml
 
     >>>
     output{
@@ -241,7 +190,7 @@ task AddQuality{
         File alignment_metrics
         File alignment_metrics_yaml
         File classifier_training_data
-        String filename_prefix
+        String? filename_prefix = "quality_classifier"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -269,7 +218,7 @@ task CreateSegmentsTar{
         File hmmcopy_metrics_yaml
         Array[File] segments_plot
         Array[File] segments_plot_sample
-        String filename_prefix
+        String? filename_prefix = "segments_pdf_tar"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -277,7 +226,7 @@ task CreateSegmentsTar{
 
     }
     command<<<
-    hmmcopy_utils create_segs_tar --segs_png ~{sep = " " segments_plot} \
+    hmmcopy_utils create_segs_tar --segs_pdf ~{sep = " " segments_plot} \
     --metrics ~{hmmcopy_metrics} --pass_output ~{filename_prefix}_pass.tar.gz \
     --fail_output ~{filename_prefix}_fail.tar.gz --tempdir temp
     >>>
@@ -302,7 +251,7 @@ task GenerateHtmlReport{
         File metrics_yaml
         File gc_metrics
         File gc_metrics_yaml
-        String filename_prefix
+        String? filename_prefix = "html_report"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -334,7 +283,7 @@ task AddClusteringOrder{
         File reads
         File reads_yaml
         Array[String] chromosomes
-        String filename_prefix = "added_clustering_order"
+        String? filename_prefix = "added_clustering_order"
         String? singularity_image
         String? docker_image
         Int? memory_override

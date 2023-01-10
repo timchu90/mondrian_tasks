@@ -6,7 +6,7 @@ task SvGenotyper{
         File bai
         File destruct_reads
         File destruct_table
-        String filename_prefix = "sv_genotyping"
+        String? filename_prefix = "sv_genotyping"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8

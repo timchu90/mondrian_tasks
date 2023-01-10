@@ -4,7 +4,7 @@ version 1.0
 task MarkDuplicates{
     input{
         File input_bam
-        String filename_prefix = "output"
+        String? filename_prefix = "picard_markdups"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -43,7 +43,7 @@ task CollectGcBiasMetrics{
         File input_bam
         File reference
         File reference_fai
-        String filename_prefix = "output"
+        String? filename_prefix = "picard_gcbias"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -79,7 +79,7 @@ task CollectWgsMetrics{
         File input_bam
         File reference
         File reference_fai
-        String filename_prefix = "output"
+        String? filename_prefix = "picard_wgs_metrics"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -114,7 +114,7 @@ task CollectWgsMetrics{
 task CollectInsertSizeMetrics{
     input{
         File input_bam
-        String filename_prefix = "output"
+        String? filename_prefix = "picard_insert_size"
         String? singularity_image
         String? docker_image
         Int? memory_override

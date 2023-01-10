@@ -11,6 +11,7 @@ struct Reference{
     String genome_name
     File reference
     File reference_fa_fai
+    File? reference_fa_alt
     File reference_fa_amb
     File reference_fa_ann
     File reference_fa_bwt
@@ -31,6 +32,7 @@ task AlignPostprocessAllLanes{
         Int min_mqual=20
         Int min_bqual=20
         Boolean count_unpaired=false
+        Boolean? run_fastq = false
         Int? num_threads
         String? singularity_image
         String? docker_image
@@ -57,7 +59,8 @@ task AlignPostprocessAllLanes{
         --fastqscreen_detailed_output detailed_fastqscreen.csv.gz \
         --fastqscreen_summary_output summary_fastqscreen.csv.gz \
         --tar_output ~{cell_id}.tar.gz \
-        --num_threads ~{num_threads}
+        --num_threads ~{num_threads} \
+        ~{true='--run_fastq' false='' run_fastq}
     }
     output {
         File bam = "aligned.bam"
@@ -143,9 +146,10 @@ task BamMerge{
     input{
         Array[File] input_bams
         Array[String] cell_ids
+        File reference
         File metrics
         File metrics_yaml
-        String filename_prefix
+        String? filename_prefix = "merge"
         String? singularity_image
         String? docker_image
         Int? num_threads = 8
@@ -156,15 +160,19 @@ task BamMerge{
         alignment_utils merge_cells --metrics ~{metrics}  --infile ~{sep=" "input_bams} --cell_id ~{sep=" "cell_ids} \
         --tempdir temp --ncores ~{num_threads} --contaminated_outfile ~{filename_prefix}_contaminated.bam \
         --control_outfile ~{filename_prefix}_control.bam \
-        --pass_outfile ~{filename_prefix}.bam
+        --pass_outfile ~{filename_prefix}.bam \
+        --reference ~{reference}
     >>>
     output{
         File pass_outfile = "~{filename_prefix}.bam"
         File pass_outfile_bai = "~{filename_prefix}.bam.bai"
+        File pass_outfile_tdf = "~{filename_prefix}.bam.tdf"
         File contaminated_outfile = "~{filename_prefix}_contaminated.bam"
         File contaminated_outfile_bai = "~{filename_prefix}_contaminated.bam.bai"
+        File contaminated_outfile_tdf = "~{filename_prefix}_contaminated.bam.tdf"
         File control_outfile = "~{filename_prefix}_control.bam"
         File control_outfile_bai = "~{filename_prefix}_control.bam.bai"
+        File control_outfile_tdf = "~{filename_prefix}_control.bam.tdf"
     }
     runtime{
         memory: 12 * num_threads + "GB"
@@ -176,7 +184,6 @@ task BamMerge{
         singularity: '~{singularity_image}'
     }
 }
-
 
 task AddContaminationStatus{
     input{
@@ -210,7 +217,7 @@ task ClassifyFastqscreen{
         File training_data
         File metrics
         File metrics_yaml
-        String filename_prefix
+        String? filename_prefix = "fastqscreen"
         String? singularity_image
         String? docker_image
         Int? memory_override
@@ -275,4 +282,46 @@ task AlignmentMetadata{
         singularity: '~{singularity_image}'
         disks: "local-disk " + diskSize + " HDD"
     }
+}
+
+
+struct Lane{
+    File fastq1
+    File fastq2
+    String lane_id
+    String flowcell_id
+}
+
+
+struct Cell{
+    String cell_id
+    Array[Lane] lanes
+}
+
+
+task InputValidation{
+    input {
+        File metadata_yaml
+        Array[Cell] input_data
+        String? singularity_image
+        String? docker_image
+        Int? memory_override
+        Int? walltime_override
+    }
+    command <<<
+        alignment_utils input_validation --meta_yaml ~{metadata_yaml} --input_data_json ~{write_json(input_data)} \
+        && cp ~{metadata_yaml} metadata.yaml
+    >>>
+    # this is just to force run this task first
+    output{
+        File metadata_yaml_output = "metadata.yaml"
+    }
+    runtime{
+        memory: "~{select_first([memory_override, 7])} GB"
+        walltime: "~{select_first([walltime_override, 6])}:00"
+        cpu: 1
+        docker: '~{docker_image}'
+        singularity: '~{singularity_image}'
+    }
+
 }

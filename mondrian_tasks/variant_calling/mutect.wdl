@@ -134,7 +134,8 @@ task MergeVCFs {
     }
     command {
         set -e
-        gatk --java-options "-Xmx4G" MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz
+        mkdir tempdir
+        gatk MergeVcfs -I ~{sep=' -I ' vcf_files} -O merged.vcf.gz --TMP_DIR tempdir
     }
     output {
         File merged_vcf = "merged.vcf.gz"
@@ -328,15 +329,21 @@ task LearnReadOrientationModel {
 
     command {
         set -e
+
+        echo "-I ~{sep=" -I " f1r2_tar_gz}" > arguments_list
+
+        mkdir tempdir
+
         gatk LearnReadOrientationModel \
-            -I ~{sep=" -I " f1r2_tar_gz} \
-            -O "artifact-priors.tar.gz"
+            --arguments_file arguments_list \
+            -O artifact-priors.tar.gz \
+            --tmp-dir tempdir
     }
     output {
         File artifact_prior_table = "artifact-priors.tar.gz"
     }
     runtime{
-        memory: "~{select_first([memory_override, 7])} GB"
+        memory: "~{select_first([memory_override, 14])} GB"
         walltime:  "~{select_first([walltime_override, 24])}:00"
         cpu: 1
         docker: '~{docker_image}'

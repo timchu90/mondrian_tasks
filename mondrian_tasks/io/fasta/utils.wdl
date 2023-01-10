@@ -1,21 +1,26 @@
 version 1.0
 
 
-
-task MergePdf{
+task GetRegions{
     input{
-        Array[File] infiles
-        String? filename_prefix = "merge_pdf"
+        File reference
+        Array[String] chromosomes
+        Int? size = 1000000
         String? singularity_image
         String? docker_image
         Int? memory_override
         Int? walltime_override
+
     }
     command<<<
-        pdf_utils merge_pdfs --infiles ~{sep=" "infiles} --outfile ~{filename_prefix}.pdf
+        reference_utils get_intervals \
+        --reference ~{reference} \
+        --output intervals.txt  \
+        --chromosomes ~{sep=" " chromosomes} \
+        --interval_size ~{size}
     >>>
     output{
-        File merged = '~{filename_prefix}.pdf'
+        Array[String] regions = read_lines('intervals.txt')
     }
     runtime{
         memory: "~{select_first([memory_override, 7])} GB"
